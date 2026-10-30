@@ -1,4 +1,4 @@
-/* © 2026 Ride Bangla Limited. Standard Licence, see LICENSE-NOTE.md. */
+/* © 2026 Tabassum Nisha. Standard Licence, see LICENSE-NOTE.md. */
 /* admin/js/core.js — API client, DOM helper, toasts, dialogs and the form builder. All text is set with textContent. */
 (function () {
   'use strict';
