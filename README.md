@@ -55,6 +55,10 @@ Dockerfile · docker-compose.yml
 README.md · HowToSetup.md · CLAUDE.md · CHANGELOG.md · LICENSE-NOTE.md
 ```
 
+## Public demo deployment
+
+`render.yaml` is included as a deployment blueprint for a Node.js web service with a persistent SQLite/uploads disk. Import the repository into Render, review the service plan and disk cost, set `ADMIN_EMAIL` and `ADMIN_PASSWORD` as private environment variables, and deploy. Do not publish those credentials in this repository. After deployment, verify `/api/health`, sign in at `/admin/`, replace sensitive or placeholder content as needed, and provide the reviewer login through Vibe96's private submission form. A running GitHub Pages URL is only a static preview and does not satisfy the CMS demo requirement.
+
 ## Security model
 
 - Passwords are hashed with **scrypt** (per-user salt). Sessions are random tokens stored only as SHA-256 hashes; the cookie is `HttpOnly` and `SameSite=Strict` (and `Secure` over HTTPS).
