@@ -1,5 +1,5 @@
 'use strict';
-/* © 2026 Ride Bangla Limited. Standard Licence, see LICENSE-NOTE.md. */
+/* © 2026 Tabassum Nisha. Standard Licence, see LICENSE-NOTE.md. */
 /* server/validate.js — tiny schema validator. Unknown fields are dropped; errors are collected per field. */
 
 class HttpError extends Error {
