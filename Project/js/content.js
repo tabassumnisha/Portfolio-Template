@@ -1,4 +1,4 @@
-/* © 2026 Ride Bangla Limited. Standard Licence, see LICENSE-NOTE.md. */
+/* © 2026 Tabassum Nisha. Standard Licence, see LICENSE-NOTE.md. */
 /* js/content.js — applies the site settings (from the database, via /api/public) to the page text, images and links. */
 (function () {
   'use strict';
