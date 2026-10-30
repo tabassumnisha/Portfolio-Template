@@ -1,4 +1,4 @@
-/* © 2026 Ride Bangla Limited. Standard Licence, see LICENSE-NOTE.md. */
+/* © 2026 Tabassum Nisha. Standard Licence, see LICENSE-NOTE.md. */
 /* js/contact.js — contact section.
    * Every <a data-wa> gets a prefilled https://wa.me/<digits>?text=... link (number from the site settings).
    * The contact form POSTs to /api/contact; the server validates it and stores it in the private admin inbox. */
