@@ -1,0 +1,23 @@
+name: CI
+
+on:
+  push:
+    branches: [main, vibe96-cms-restored]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.16.0'
+      - name: Verify JavaScript syntax
+        run: |
+          find server Project test -type f -name '*.js' -print0 | xargs -0 -n1 node --check
+      - name: Run application and security tests
+        run: npm test

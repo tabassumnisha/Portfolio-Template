@@ -1,4 +1,4 @@
-/* © 2026 Ride Bangla Limited. Standard Licence, see LICENSE-NOTE.md. */
+/* © 2026 Tabassum Nisha. Standard Licence, see LICENSE-NOTE.md. */
 /* js/effects.js — reveal-on-scroll (also animates skill rings) and the desktop cursor glow. */
 (function () {
   'use strict';
