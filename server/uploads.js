@@ -1,5 +1,5 @@
 'use strict';
-/* © 2026 Ride Bangla Limited. Standard Licence, see LICENSE-NOTE.md. */
+/* © 2026 Tabassum Nisha. Standard Licence, see LICENSE-NOTE.md. */
 /* server/uploads.js — image uploads: type is decided by the file's magic bytes, never by its name or header. */
 const fs = require('node:fs');
 const path = require('node:path');
