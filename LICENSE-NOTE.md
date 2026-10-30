@@ -1,8 +1,8 @@
 # LICENSE NOTE
 
 **Product:** Creative Portfolio CMS (portfolio website with admin panel), version 2.0.0
-**Licensor:** Ride Bangla Limited, Faridpur, Bangladesh, info@ridebangla.bd
-**Copyright:** © 2026 Ride Bangla Limited. All rights reserved, except as expressly granted below.
+**Licensor:** Tabassum Nisha (seller contact is provided on the marketplace listing)
+**Copyright:** © 2026 Tabassum Nisha. All rights reserved, except as expressly granted below.
 
 This file has two parts: **Part A** is the licence for the template code and design you bought. **Part B** lists every bundled asset (images, fonts, icons, code) and who holds the rights to it.
 
@@ -55,7 +55,7 @@ This licence ends automatically if you breach section 3. On termination you must
 This licence is governed by the laws of Bangladesh. Disputes are handled by the competent courts of Bangladesh, unless the marketplace terms where you bought the Template require otherwise.
 
 ### 10. Contact
-Questions, extra licences or permission requests: **info@ridebangla.bd** (Ride Bangla Limited).
+Questions, extra licences or permission requests: the seller contact shown on the Vibe96 listing.
 
 ---
 
@@ -65,11 +65,11 @@ Questions, extra licences or permission requests: **info@ridebangla.bd** (Ride B
 
 | File | What it is | Source and rights |
 |---|---|---|
-| `portrait-placeholder.webp` | Neutral silhouette used as the hero portrait placeholder (transparent) | Original vector artwork drawn for this Template by Ride Bangla (HTML/SVG). No real person. Covered by Part A. |
-| `about-photo.jpg` | Same silhouette on a lilac background for the About polaroid | Original artwork by Ride Bangla. No real person. Covered by Part A. |
-| `project-01-brand-identity.jpg` … `project-06-print-business-card.jpg` | Six sample project mock-ups (brand board, packaging, social posts, stationery, UI/UX, business card) | Original mock-ups drawn for this Template by Ride Bangla using CSS shapes. They show only generic text ("Brand Name", "Your Name", `example.com`), no real brands, logos, trademarks or people. Covered by Part A. |
-| `og-cover.jpg` | 1200×630 social-sharing card | Original artwork by Ride Bangla. Covered by Part A. |
-| `work-together-banner.jpg`, `workspace-banner.jpg` | Abstract purple banner and a stylised dark desk scene | Original artwork by Ride Bangla. Covered by Part A. |
+| `portrait-placeholder.webp` | Neutral silhouette used as the hero portrait placeholder (transparent) | Original vector artwork drawn for this Template by Tabassum Nisha (HTML/SVG). No real person. Covered by Part A. |
+| `about-photo.jpg` | Same silhouette on a lilac background for the About polaroid | Original artwork by Tabassum Nisha. No real person. Covered by Part A. |
+| `project-01-brand-identity.jpg` … `project-06-print-business-card.jpg` | Six sample project mock-ups (brand board, packaging, social posts, stationery, UI/UX, business card) | Original mock-ups drawn for this Template by Tabassum Nisha using CSS shapes. They show only generic text ("Brand Name", "Your Name", `example.com`), no real brands, logos, trademarks or people. Covered by Part A. |
+| `og-cover.jpg` | 1200×630 social-sharing card | Original artwork by Tabassum Nisha. Covered by Part A. |
+| `work-together-banner.jpg`, `workspace-banner.jpg` | Abstract purple banner and a stylised dark desk scene | Original artwork by Tabassum Nisha. Covered by Part A. |
 
 No stock photos, AI-image-generator output, client work or photographs of real people are included. When you replace these with your own images, you are responsible for having the rights to them.
 
