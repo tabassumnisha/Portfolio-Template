@@ -1,4 +1,4 @@
-/* © 2026 Ride Bangla Limited. Standard Licence, see LICENSE-NOTE.md. */
+/* © 2026 Tabassum Nisha. Standard Licence, see LICENSE-NOTE.md. */
 /* js/gallery.js — builds the filter buttons and project cards from the server data and handles filtering.
    Filter buttons are real <button> elements: operable with Tab, Enter and Space (aria-pressed). */
 (function () {
