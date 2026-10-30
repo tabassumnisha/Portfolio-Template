@@ -1,5 +1,5 @@
 /* © 2026 Ride Bangla Limited. Standard Licence, see LICENSE-NOTE.md. */
-/* js/services.js — builds the service cards and the skill rings from the server data. */
+/* js/services.js — builds the service cards and the skill rings from js/data.js. */
 (function () {
   'use strict';
   var P = window.Portfolio, $ = P.$;

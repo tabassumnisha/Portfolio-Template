@@ -1,8 +1,8 @@
 /* © 2026 Ride Bangla Limited. Standard Licence, see LICENSE-NOTE.md. */
-/* js/content.js — applies the site settings (from the database, via /api/public) to the page text, images and links. */
+/* js/content.js — applies SITE_CONFIG (config.example.js) to the page text, images and links. */
 (function () {
   'use strict';
-  var P = window.Portfolio, $ = P.$, $$ = P.$$, cfg = {};
+  var P = window.Portfolio, $ = P.$, $$ = P.$$, cfg = P.config;
   var SOCIAL_ICONS = { facebook: 'i-facebook', x: 'i-x', instagram: 'i-instagram', github: 'i-code', telegram: 'i-telegram', reddit: 'i-reddit' };
   var SOCIAL_LABELS = { facebook: 'Facebook', x: 'X', instagram: 'Instagram', github: 'GitHub', telegram: 'Telegram', reddit: 'Reddit' };
 
@@ -19,7 +19,6 @@
   }
 
   function run() {
-    cfg = P.config;
     var owner = cfg.owner || {}, contact = cfg.contact || {}, site = cfg.site || {}, images = cfg.images || {};
 
     /* Generic text bindings: <span data-bind="owner.name"></span> */

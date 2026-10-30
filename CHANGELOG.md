@@ -2,26 +2,6 @@
 
 All notable changes to this template are recorded here. The format follows [Keep a Changelog](https://keepachangelog.com/) and the project uses [Semantic Versioning](https://semver.org/).
 
-## [2.0.0] — 2026-10-30
-
-The template became a complete software product: a portfolio website with a database, an admin panel, authentication and roles.
-
-### Added
-- Node.js server with no third-party dependencies (`server/`), SQLite storage (`database/schema.sql`, `database/seed.sql`), `npm start`, `npm test`, `npm run create-admin`.
-- Admin panel at `/admin/`: dashboard, projects (with image upload, publish/hide, featured), categories, services, skills, other skills, messages inbox, site settings, user management and change password. Works on phones.
-- Authentication (scrypt password hashing, hashed server-side sessions, `HttpOnly` + `SameSite=Strict` cookie), roles `admin` / `editor`, CSRF protection, Origin check, per-IP rate limits, strict Content-Security-Policy.
-- Contact form now stores messages in the private admin inbox (validated, honeypot, rate limited); WhatsApp buttons remain.
-- 16 automated tests (`test/api.test.js`) covering authentication, roles on every route, CSRF, validation, uploads, rate limiting and path traversal.
-- `.env.example` (now read at runtime), `Dockerfile`, new `docker-compose.yml`, `docs/api.md`.
-
-### Changed
-- All content (texts, images, projects, services, skills, social links) is read from the database through `GET /api/public` instead of `config.example.js` and `js/data.js`, which were removed. Page design, CSS and layout are unchanged.
-- `js/whatsapp-inquiry.js` became `js/contact.js`; the inline script in `index.html` moved to `js/boot.js` for the Content-Security-Policy.
-- Documentation rewritten for the new architecture; `LICENSE-NOTE.md` updated (product name, code section).
-
-### Removed
-- Static-only hosting (GitHub Pages / Netlify static) is no longer supported; the site needs Node.js 22.13+ and a persistent disk (see `HowToSetup.md`).
-
 ## [1.0.1] — 2026-10-29
 
 ### Added

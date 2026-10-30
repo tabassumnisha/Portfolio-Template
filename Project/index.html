@@ -13,7 +13,7 @@
   <!-- Social crawlers need an absolute URL here once your site is live, e.g. https://your-domain.com/assets/images/og-cover.jpg -->
   <meta property="og:image" content="assets/images/og-cover.jpg">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23060918'/%3E%3Ctext x='32' y='43' font-size='30' text-anchor='middle' fill='%23b86bff' font-family='Georgia' font-weight='700'%3EYN%3C/text%3E%3C/svg%3E">
-  <script src="js/boot.js"></script>
+  <script>document.documentElement.classList.add('js')</script>
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/layout.css">
   <link rel="stylesheet" href="css/components.css">
@@ -70,7 +70,7 @@
   </header>
 
   <main id="main">
-    <noscript><p class="noscript-note">This portfolio loads its content from the server with JavaScript. Please enable JavaScript to see all sections.</p></noscript>
+    <noscript><p class="noscript-note">This portfolio builds its gallery, services and contact links with JavaScript. Please enable JavaScript to see all sections.</p></noscript>
 
     <!-- HERO -->
     <section id="home" class="hero" aria-labelledby="heroName">
@@ -134,7 +134,7 @@
       </div>
     </section>
 
-    <!-- SERVICES (cards generated from the database via /api/public) -->
+    <!-- SERVICES (cards generated from js/data.js) -->
     <section id="services" class="section light services" aria-labelledby="servicesTitle">
       <div class="wrap">
         <div class="section-head reveal">
@@ -146,7 +146,7 @@
       </div>
     </section>
 
-    <!-- PORTFOLIO (filters and cards generated from the database via /api/public) -->
+    <!-- PORTFOLIO (filters and cards generated from js/data.js) -->
     <section id="portfolio" class="section light portfolio" aria-labelledby="portfolioTitle">
       <div class="wrap">
         <div class="section-head reveal">
@@ -161,7 +161,7 @@
       </div>
     </section>
 
-    <!-- SKILLS (rings generated from the database via /api/public) -->
+    <!-- SKILLS (rings generated from js/data.js) -->
     <section id="skills" class="section light skills" aria-labelledby="skillsTitle">
       <div class="wrap">
         <div class="section-head reveal">
@@ -222,10 +222,8 @@
             <label><span>Your Email <i aria-hidden="true">*</i></span><input type="email" name="email" required placeholder="Enter your email" autocomplete="email"></label>
             <label><span>Subject</span><select name="subject"><option>Project Inquiry</option><option>Branding</option><option>Web Design</option><option>Social Media Design</option><option>Other</option></select></label>
             <label><span>Message <i aria-hidden="true">*</i></span><textarea name="message" rows="4" required placeholder="Type your message..."></textarea></label>
-            <label class="sr-only" aria-hidden="true">Leave this field empty<input name="website" tabindex="-1" autocomplete="off"></label>
             <button class="primary-btn full" type="submit"><span>Send Message</span><svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg></button>
-            <p class="form-note" id="formStatus" role="status" aria-live="polite" hidden></p>
-            <p class="form-note" data-bind="site.formNote">Your message is saved in the site owner's private inbox. Your details are not shared with anyone else.</p>
+            <p class="form-note" data-bind="site.formNote">Clicking Send Message opens WhatsApp with your message. Nothing is stored or sent to a server.</p>
           </form>
         </div>
 
@@ -249,14 +247,15 @@
     </div>
   </footer>
 
-  <!-- Scripts: plain classic scripts (no modules, no inline code, so the strict Content-Security-Policy applies). Order matters. -->
+  <!-- Scripts: plain classic scripts (no modules) so index.html also works when opened directly from disk. Order matters. -->
+  <script src="config.example.js"></script>
+  <script src="js/data.js"></script>
   <script src="js/utils.js"></script>
-  <script src="js/api.js"></script>
   <script src="js/content.js"></script>
   <script src="js/gallery.js"></script>
   <script src="js/services.js"></script>
   <script src="js/nav.js"></script>
-  <script src="js/contact.js"></script>
+  <script src="js/whatsapp-inquiry.js"></script>
   <script src="js/effects.js"></script>
   <script src="js/main.js"></script>
 </body>

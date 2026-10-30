@@ -1,160 +1,290 @@
 # HowToSetup
 
-Step-by-step guide for **Creative Portfolio CMS** (version 2.0.0). Follow sections 1–4 to run it on your computer, then pick one deployment in section 6.
+Step-by-step setup for the **Responsive Creative Portfolio Website Template**.
 
-## Contents
-1. Requirements
-2. Install and first start
-3. First sign-in and customising your site
-4. Configuration reference (`.env`)
-5. Backups, updates and password reset
-6. Deploy (VPS + nginx, Docker, PaaS)
-7. Demo site for marketplace reviewers
-8. Final checklist
-9. Troubleshooting
+**Dependencies:** none. The template uses plain HTML5, CSS3 and vanilla JavaScript. There is **no `package.json`, no npm install, no build step, no backend, no database and no CDN request**. Everything runs by opening `Project/index.html` or serving the `Project/` folder with any static web server. `.env.example`, `database/` and `docker-compose.yml` are optional extras (see sections 10 and 11).
+
+Contents
+
+1. [Quick overview](#1-quick-overview)
+2. [Local preview](#2-local-preview)
+3. [Configuration reference (`config.example.js`)](#3-configuration-reference)
+4. [Change the branding](#4-change-the-branding)
+5. [Change the WhatsApp number](#5-change-the-whatsapp-number)
+6. [Replace portfolio project images](#6-replace-portfolio-project-images)
+7. [Deploy: Netlify](#7-deploy-to-netlify)
+8. [Deploy: GitHub Pages](#8-deploy-to-github-pages)
+9. [Deploy: VPS with nginx](#9-deploy-to-a-vps-with-nginx)
+10. [Deploy: Docker](#10-deploy-with-docker)
+11. [Database and first admin login](#11-database-and-first-admin-login)
+12. [Final checklist](#12-final-checklist)
+13. [Troubleshooting](#13-troubleshooting)
 
 ---
 
-## 1. Requirements
-- **Node.js 22.13 or newer** — check with `node -v`. (The app uses Node's built-in SQLite module; on Node 22 it prints no warning because the start script silences the "experimental" notice.)
-- Nothing else. There is **no `npm install`**, no build step and no external database server: data lives in one SQLite file.
-- Optional: Docker 24+ with Compose v2 for section 6.2; a domain name and HTTPS for production.
+## 1. Quick overview
 
-## 2. Install and first start
-1. Unzip the package and open a terminal in the folder that contains `package.json`.
-2. Create your settings file: `cp .env.example .env`
-3. Open `.env` and set:
-   ```ini
-   ADMIN_EMAIL=you@your-domain.com
-   ADMIN_PASSWORD=a-long-password-only-you-know
+```text
+.env.example             every setting with a placeholder (reference only; not read at runtime)
+docker-compose.yml       nginx container for Project/
+database/                optional schema.sql + seed.sql (the site does not use them)
+Project/
+├── index.html              page structure (semantic sections, SVG icon sprite)
+├── config.example.js       the ONE config file: your name, WhatsApp number, e-mail, social links
+├── css/                    base.css, layout.css, components.css, responsive.css
+├── js/                     data.js, utils.js, content.js, gallery.js, services.js,
+│                           nav.js, whatsapp-inquiry.js, effects.js, main.js
+└── assets/images/          sample images (replace with your own)
+```
+
+`config.example.js` is loaded directly by `index.html`. Despite the word "example", **you edit this file in place**; there is nothing to copy or rename. (If you prefer a different name, rename the file and change the one `<script src="config.example.js">` line near the end of `index.html`.)
+
+Requirements: any modern browser (Chrome, Edge, Firefox, Safari). Python 3 is optional and only used for a local web server.
+
+---
+
+## 2. Local preview
+
+**Option A: open the file.** Double-click `Project/index.html`. Every script is a classic script (no ES modules), so it works from `file://`.
+
+**Option B: simple static server** (closest to production):
+
+```bash
+cd Project
+python3 -m http.server 8080
+```
+
+Open <http://localhost:8080>. Stop the server with `Ctrl+C`. On Windows use `py -m http.server 8080`. Any other static server works as well.
+
+---
+
+## 3. Configuration reference
+
+All keys live in `Project/config.example.js` under `window.SITE_CONFIG`. **All values shipped in the file are placeholders.** Never put passwords, credentials or private URLs in it: the file is public to every visitor.
+
+| Key | Type | What it controls | Placeholder |
+|---|---|---|---|
+| `owner.name` | text | Name in header, hero title (last word is highlighted), polaroid, quote and footer | `Your Name` |
+| `owner.initials` | text (1–3 letters) | Brand mark in the header | `YN` |
+| `owner.role` | text | Job title under the hero name | `Graphic Designer & Digital Creator` |
+| `owner.intro` | text | Short paragraph in the hero | sample sentence |
+| `owner.about` | text | Paragraph in the About section | sample sentence |
+| `owner.tagline` | text | Line under "About Me" | sample sentence |
+| `owner.quote` | text | Quote card text (attributed to `owner.name`) | sample quote |
+| `owner.location` | text | Location in the info bar and contact list | `Your City, Country` |
+| `owner.experience` | text | Experience in the info bar | `2+ Years` |
+| `images.hero` | path | Hero portrait. Use a **transparent** cut-out (WebP/PNG), about 1000×1307 | `assets/images/portrait-placeholder.webp` |
+| `images.about` | path | Portrait in the About polaroid, 4:5 ratio, about 960×1200 | `assets/images/about-photo.jpg` |
+| `contact.whatsappNumber` | text | WhatsApp number in international format. Spaces, `+`, `-` and brackets are removed automatically to build `wa.me/<digits>` | `+10000000000` |
+| `contact.whatsappGreeting` | text | Prefilled message on every WhatsApp button (URL-encoded with `encodeURIComponent`) | sample greeting |
+| `contact.email` | text | Shown on the page and used for `mailto:` | `hello@example.com` |
+| `contact.website` | URL | Shown and linked in the footer | `https://example.com` |
+| `social.facebook`, `social.x`, `social.instagram`, `social.github`, `social.telegram`, `social.reddit` | URL or `""` | Social icons (hero and contact). **An empty string hides that icon.** Only `http(s)://` links are accepted | `https://example.com/yourname` |
+| `extraLinks` | list of `{ label, url }` | Text chips under "Follow Me" (for example Behance, Dribbble). Delete entries you do not need | two sample entries |
+| `site.title` | text | Browser tab title | `Your Name — Designer & Creative Professional` |
+| `site.description` | text | Meta description and Open Graph description | sample sentence |
+| `site.footerQuote` | text | Quote in the footer | `Good Design is Good Business` |
+| `site.formNote` | text | Small note under the contact form | privacy note |
+
+Gallery projects, filter categories, services and skills are **data**, not config, and live in `js/data.js` (see [docs/customisation.md](docs/customisation.md)).
+
+> **Crawlers and social previews:** search engines and social networks read the static `<title>` and `<meta>` tags in `index.html`, not the JavaScript values. After editing `config.example.js`, also update `<title>`, `<meta name="description">` and the `og:` tags in `index.html`, and make `og:image` an absolute URL (for example `https://your-domain.com/assets/images/og-cover.jpg`).
+
+---
+
+## 4. Change the branding
+
+1. **Name, initials, role, texts:** edit `owner` and `site` in `config.example.js`.
+2. **Colours:** edit the theme variables at the top of `css/base.css` (`--violet`, `--purple`, `--lilac`, `--accent-text`, `--btn-from`, `--btn-to`, `--navy`, `--ink`, …). Details and what each variable changes are in [docs/customisation.md](docs/customisation.md).
+3. **Fonts:** the CSS asks for *DM Sans*, *DM Serif Display* and *Caveat* and falls back to system fonts. To ship them with your site, see "Adding web fonts" in [docs/customisation.md](docs/customisation.md).
+4. **Favicon:** the favicon is an inline SVG in the `<link rel="icon">` line in `index.html`. Change the letters `YN` in that line (or point `href` at your own `.ico`/`.png`).
+5. **Social sharing image:** replace `assets/images/og-cover.jpg` (1200×630) and set an absolute URL in `og:image`.
+6. **Portraits:** put your photo files in `assets/images/` and set `images.hero` and `images.about`.
+
+---
+
+## 5. Change the WhatsApp number
+
+1. Open `Project/config.example.js`.
+2. Set `contact.whatsappNumber` to your number in international format, for example `"+14155550123"` or `"+441234567890"`.
+3. Optionally edit `contact.whatsappGreeting` (the prefilled text).
+4. Save and reload. Click any WhatsApp button: it opens `https://wa.me/<your digits>?text=<encoded greeting>`. The contact form opens the same link with the visitor's name, e-mail, subject and message.
+
+Nothing is stored or sent to any server: the visitor's message goes only to WhatsApp, and only when they press the button.
+
+---
+
+## 6. Replace portfolio project images
+
+1. Prepare images at **1200×900 px (4:3)**, JPG or WebP, ideally under 200 KB each.
+2. Copy them into `Project/assets/images/`.
+3. Open `js/data.js` and edit the `projects` list, one object per project:
+
+   ```js
+   { id: "my-logo", title: "Brand Identity", subtitle: "Logo Design", category: "branding",
+     image: "my-logo.jpg", alt: "Logo and colour palette for a coffee shop" }
    ```
-   (10+ characters.) These are used **once**, when the database has no user yet.
-4. Start: `npm start`
-5. You should see `Creative Portfolio CMS running: http://localhost:3000`. Open it in a browser.
-6. **Remove the `ADMIN_PASSWORD` line from `.env`** now. The account already exists.
 
-Prefer not to put a password in a file? Leave both lines empty and run `npm run create-admin`; it asks for the e-mail and password interactively.
+   `category` must match an `id` in `categories`. `alt` is required (it is what screen readers read).
+4. To keep the original file names instead, overwrite the files `project-01-…jpg` to `project-06-…jpg`.
 
-The database and uploaded images are created in the `data/` folder on first start; the page is filled with placeholder content from `database/seed.sql`. (Set `SEED_SAMPLE_DATA=false` to start with an empty site.)
+Adding or removing a project needs no HTML edit: the cards and filters are generated from this list.
 
-## 3. First sign-in and customising your site
-1. Go to `/admin/` and sign in.
-2. **Site settings** → replace the placeholder name, role, texts, photos, WhatsApp number, e-mail and social links → **Save settings**.
-3. **Projects** → open each sample project and replace its image, title and description, or delete it and add your own. Pick one project with **Feature** for the Featured band.
-4. **Categories, Services, Skills** → edit to match your work. Categories become the filter buttons; a category with no published project is hidden automatically.
-5. **Users** (admin only) → add an `editor` account for a colleague or client who should manage content but not settings or users.
-6. **My account** → change your password at any time (other devices are signed out).
+---
 
-Visitors' messages arrive under **Messages**. The dashboard shows the unread count. (The CMS does not send e-mail notifications; check the inbox, or put your WhatsApp number in the settings for instant chats.)
+## 7. Deploy to Netlify
 
-Image tips: project images ~1200×900 (4:3); hero portrait a transparent PNG/WebP ~1000×1307; about photo 4:5 ~960×1200. Maximum upload size is `MAX_UPLOAD_MB` (default 5).
+**Drag and drop (fastest)**
+1. Sign in at <https://app.netlify.com> and open **Sites**.
+2. Drag the **`Project`** folder onto the "Deploy manually" area.
+3. Netlify returns a public URL. Add your own domain under **Domain settings**.
 
-## 4. Configuration reference (`.env`)
-| Variable | Default | Meaning |
-|---|---|---|
-| `PORT` | `3000` | Port the server listens on |
-| `HOST` | `0.0.0.0` | Interface to bind (`127.0.0.1` when a reverse proxy is on the same machine) |
-| `DATA_DIR` | `data` | Folder for `portfolio.db` and `uploads/` |
-| `ADMIN_EMAIL`, `ADMIN_PASSWORD`, `ADMIN_NAME` | empty | First administrator, created once if no user exists |
-| `SESSION_HOURS` | `12` | How long a sign-in lasts |
-| `COOKIE_SECURE` | `auto` | `true` forces the Secure flag (use on HTTPS) |
-| `TRUST_PROXY` | `false` | `true` only behind your own reverse proxy |
-| `MAX_UPLOAD_MB` | `5` | Upload size limit |
-| `SEED_SAMPLE_DATA` | `true` | Fill an empty database with the placeholder portfolio |
-| `RATE_LIMIT` | `true` | Per-IP limits on login, contact and uploads |
+**From a Git repository**
+1. Push the project to GitHub/GitLab.
+2. In Netlify choose **Add new site → Import an existing project**.
+3. Set **Build command:** *(leave empty)* and **Publish directory:** `Project`.
+4. Deploy.
 
-Site content (names, texts, links) is **not** in `.env`; it lives in the database and is edited in the admin panel. Site title and meta tags are applied from the settings by `Project/js/content.js`.
+---
 
-## 5. Backups, updates and password reset
-- **Backup:** stop the server (or use `sqlite3 data/portfolio.db ".backup backup.db"`) and copy the whole `data/` folder. It contains everything: content, messages, users and uploads.
-- **Restore:** put the folder back as `data/` and start the server.
-- **Update to a new version:** replace `server/`, `database/`, `Project/`, `package.json` (keep your `.env` and `data/`). `database/schema.sql` runs on every start and only adds missing tables, so existing data is kept.
-- **Forgot the admin password:** run `npm run create-admin`, enter the same e-mail and a new password; it resets that account and restores admin access.
-- **Database:** `database/schema.sql` defines the tables, foreign keys and indexes. It is applied automatically; you never need to run it by hand.
+## 8. Deploy to GitHub Pages
 
-## 6. Deploy
-Run the app on any host that can run Node.js 22.13+ **and keeps a persistent disk** (the SQLite file and uploads must survive restarts). Static-only hosts (GitHub Pages, Netlify static) cannot run it.
+GitHub Pages serves a branch root, so publish the **contents** of `Project/` (do not publish the `Project` folder itself).
 
-Always serve it over **HTTPS** in production and set in `.env`:
-```ini
-COOKIE_SECURE=true
-TRUST_PROXY=true        # only if a reverse proxy in front sets X-Forwarded-For / X-Forwarded-Proto
-HOST=127.0.0.1          # if the proxy is on the same machine
-```
+1. Create a repository, e.g. `my-portfolio`.
+2. Upload everything **inside** `Project/` (`index.html`, `config.example.js`, `css/`, `js/`, `assets/`) to the repository root.
+3. Open **Settings → Pages**. Under **Build and deployment** choose **Deploy from a branch**, branch `main`, folder `/ (root)`, and save.
+4. After a minute the site is live at `https://<your-username>.github.io/my-portfolio/`. All paths in the template are relative, so a project sub-path works.
+5. Custom domain: set it under **Settings → Pages → Custom domain**.
 
-### 6.1 VPS with nginx and systemd (Ubuntu example)
+---
+
+## 9. Deploy to a VPS with nginx
+
+Typical setup for Ubuntu/Debian. Replace `example.com` with your domain.
+
 ```bash
-# On the server (Node 22.13+ installed, e.g. from nodesource or nvm)
-sudo adduser --system --group --home /opt/portfolio portfolio
-# copy the package contents to /opt/portfolio, then:
-sudo -u portfolio cp /opt/portfolio/.env.example /opt/portfolio/.env   # edit it
-```
-`/etc/systemd/system/portfolio.service`:
-```ini
-[Unit]
-Description=Creative Portfolio CMS
-After=network.target
+# 1. On the server
+sudo apt update && sudo apt install -y nginx
+sudo mkdir -p /var/www/portfolio
 
-[Service]
-User=portfolio
-WorkingDirectory=/opt/portfolio
-ExecStart=/usr/bin/node --disable-warning=ExperimentalWarning server/index.js
-Restart=on-failure
-NoNewPrivileges=true
+# 2. From your computer: upload the CONTENTS of Project
+scp -r Project/* user@your-server:/tmp/portfolio/
+# 3. On the server
+sudo cp -r /tmp/portfolio/* /var/www/portfolio/
+sudo chown -R www-data:www-data /var/www/portfolio
+```
 
-[Install]
-WantedBy=multi-user.target
-```
-```bash
-sudo systemctl daemon-reload && sudo systemctl enable --now portfolio
-```
-nginx site (then add HTTPS with `certbot --nginx`):
+Create `/etc/nginx/sites-available/portfolio`:
+
 ```nginx
 server {
-  server_name your-domain.com;
-  client_max_body_size 6m;
-  location / {
-    proxy_pass http://127.0.0.1:3000;
-    proxy_set_header Host $host;
-    proxy_set_header X-Forwarded-For $remote_addr;
-    proxy_set_header X-Forwarded-Proto $scheme;
-  }
+    listen 80;
+    listen [::]:80;
+    server_name example.com www.example.com;
+
+    root /var/www/portfolio;
+    index index.html;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+
+    # Cache static assets
+    location ~* \.(?:css|js|jpg|jpeg|png|webp|svg|ico)$ {
+        expires 30d;
+        add_header Cache-Control "public";
+        access_log off;
+    }
+
+    gzip on;
+    gzip_types text/css application/javascript image/svg+xml;
+
+    # Security headers (the template has no server code, so the policy can be strict)
+    add_header X-Content-Type-Options "nosniff" always;
+    add_header Referrer-Policy "strict-origin-when-cross-origin" always;
+    add_header X-Frame-Options "DENY" always;
+    add_header Content-Security-Policy "default-src 'self'; script-src 'self' 'sha256-Du+OJKJSbdUgz5nrHeWWINvez6XKDDU/tyj/5c2uvwo='; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'none'; object-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'" always;
 }
 ```
 
-### 6.2 Docker
+The `sha256-…` value allows the one tiny inline script in `<head>` (`document.documentElement.classList.add('js')`). If you edit that line, recompute the hash or drop the `Content-Security-Policy` header.
+
+Enable and test:
+
 ```bash
-cp .env.example .env            # set ADMIN_EMAIL / ADMIN_PASSWORD for the first start
-docker compose up -d --build
+sudo ln -s /etc/nginx/sites-available/portfolio /etc/nginx/sites-enabled/
+sudo nginx -t && sudo systemctl reload nginx
 ```
-Open `http://localhost:3000/admin/`. Data is stored in the named volume `portfolio-data`. Put a reverse proxy with HTTPS in front for production and set `COOKIE_SECURE=true`, `TRUST_PROXY=true` in `.env`.
 
-### 6.3 Platform-as-a-service (Render, Railway, Fly.io, …)
-Create a Node web service, start command `npm start`, add a **persistent disk/volume** and set `DATA_DIR` to a path on it. Set `ADMIN_EMAIL`, `ADMIN_PASSWORD` (first deploy only, then remove), `COOKIE_SECURE=true`, `TRUST_PROXY=true`. Without a persistent disk your content and messages are lost on every redeploy.
+HTTPS (free certificate):
 
-## 7. Demo site for marketplace reviewers
-A reviewer must be able to sign in. On your public demo deployment:
-1. Create a **separate demo administrator** (Users → Add user, role `admin`, or `npm run create-admin`) with a throw-away password that you do not use anywhere else.
-2. Publish those demo credentials in the listing's "demo credentials" field.
-3. Keep real personal data out of the demo; restore a clean copy of `data/` from time to time (section 5).
+```bash
+sudo apt install -y certbot python3-certbot-nginx
+sudo certbot --nginx -d example.com -d www.example.com
+```
 
-## 8. Final checklist
-- [ ] `node -v` is 22.13 or newer and `npm test` passes
-- [ ] `ADMIN_PASSWORD` removed from `.env`; `.env` and `data/` are **not** uploaded to any public repository
-- [ ] Site settings, photos, WhatsApp number, e-mail and social links replaced
-- [ ] Sample projects replaced or deleted; every project has an image description
-- [ ] HTTPS enabled, `COOKIE_SECURE=true`, `TRUST_PROXY` set correctly
-- [ ] Contact form tested; the message appears under **Messages**
-- [ ] Backup of the `data/` folder scheduled
+Updating later: copy the changed files into `/var/www/portfolio/`; no restart is needed.
 
-## 9. Troubleshooting
+---
+
+## 10. Deploy with Docker
+
+Needs Docker Engine with the Compose plugin. The container is plain nginx serving the `Project/` folder (read-only); there is no image to build.
+
+```bash
+# from the ZIP root (the folder that contains docker-compose.yml)
+docker compose up -d
+```
+
+Open <http://localhost:8080>. Useful commands:
+
+```bash
+docker compose logs -f portfolio      # watch the nginx log
+docker compose down                   # stop and remove the container
+```
+
+To use another port, copy `.env.example` to `.env`, set `PORTFOLIO_PORT=9090` and run `docker compose up -d` again. Never put real secrets in `.env`; the template has none. Edits to files in `Project/` show up on reload because the folder is mounted, not copied. For production behind your own domain, put HTTPS in front (for example the nginx + certbot steps in section 9, or a reverse proxy such as Caddy or Traefik).
+
+---
+
+## 11. Database and first admin login
+
+The template is **frontend-only**: there is no database to create, no admin area, no sign-in and no server endpoint that creates, changes or deletes data. That is why there is no "first admin login" step: nobody can change the live site except by editing its files.
+
+`database/schema.sql` and `database/seed.sql` are **optional**. They describe the same content as `Project/js/data.js` (categories, projects, services, skills) as relational tables, for a buyer who later wants to manage it in a database or CMS. The site never reads them. To try them with SQLite:
+
+```bash
+sqlite3 portfolio.db < database/schema.sql
+sqlite3 portfolio.db < database/seed.sql
+sqlite3 portfolio.db "SELECT id, title, category_id FROM projects;"
+```
+
+For PostgreSQL use `psql -d yourdb -f database/schema.sql` and then `-f database/seed.sql`. Do not commit the resulting database file or any connection string.
+
+---
+
+## 12. Final checklist
+
+- [ ] Name, role and texts replaced in `config.example.js`
+- [ ] `contact.whatsappNumber` and `contact.email` are yours; WhatsApp button opens the right chat
+- [ ] Social links set (or `""` to hide)
+- [ ] Sample project images replaced and `alt` text written in `js/data.js`
+- [ ] Hero and About portraits replaced
+- [ ] `<title>`, meta description and `og:` tags updated in `index.html`; `og:image` is an absolute URL
+- [ ] Checked at 1440 px, 1024 px, 820 px, 560 px and 390 px widths
+- [ ] Gallery filters work with mouse and keyboard (Tab, then Enter or Space)
+- [ ] Mobile menu opens and closes (button, link, Esc)
+
+---
+
+## 13. Troubleshooting
+
 | Problem | Fix |
 |---|---|
-| `Cannot find module 'node:sqlite'` | Node is too old. Install Node 22.13 or newer. |
-| `[setup] No user exists yet` | Set `ADMIN_EMAIL` and `ADMIN_PASSWORD` in `.env` or run `npm run create-admin`. |
-| Cannot sign in over HTTPS behind a proxy | Set `TRUST_PROXY=true` and make the proxy send `X-Forwarded-Proto`; or set `COOKIE_SECURE=true`. |
-| "Too many requests" | The rate limiter protects login/contact/uploads; wait 15 minutes. Behind a proxy make sure `TRUST_PROXY=true`, otherwise all visitors share one IP. |
-| Website shows "content could not be loaded" | The server is not running or `/api/public` is unreachable; check `npm start` output. |
-| Upload refused | Only real JPG/PNG/WebP/GIF files up to `MAX_UPLOAD_MB` are accepted (SVG is not allowed). |
-| Content disappears after redeploy | The host has no persistent disk; mount one and point `DATA_DIR` to it. |
-| Port already in use | Change `PORT` in `.env`. |
+| Page shows no gallery/services | JavaScript is disabled, or a script path is wrong. Open the browser console (F12) and look for a red error |
+| Old content after editing | Hard refresh (`Ctrl+Shift+R`); on a CDN/host, clear its cache |
+| WhatsApp opens with the wrong number | Check `contact.whatsappNumber`: international format, country code first |
+| An image does not show | File name and case must match exactly (`Photo.JPG` ≠ `photo.jpg` on Linux hosts) |
+| Fonts look different from the screenshots | The fonts are not bundled; see "Adding web fonts" in `docs/customisation.md` |
+| Social preview shows no image | `og:image` must be an absolute `https://` URL |

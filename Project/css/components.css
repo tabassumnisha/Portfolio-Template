@@ -103,7 +103,7 @@ a.c-row:hover b{text-decoration:underline}
 .workspace-text span:nth-child(3){padding-left:1em}
 .workspace-text .ic{color:#c79bff;width:.7em;height:.7em;vertical-align:-.05em}
 
-/* ============ SERVICE CARDS (generated from the database via /api/public) ============ */
+/* ============ SERVICE CARDS (generated from js/data.js) ============ */
 .service-card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:30px 28px 32px;box-shadow:0 10px 34px rgba(30,25,90,.05);transition:transform .3s,box-shadow .3s}
 .service-card:hover{transform:translateY(-6px);box-shadow:0 22px 55px rgba(30,25,90,.13)}
 .service-ic{width:56px;height:56px;border-radius:50%;display:grid;place-items:center;background:#efe9ff;color:var(--accent-text);font-size:22px;margin-bottom:20px}

@@ -7,9 +7,8 @@
 
   P.$ = function (sel, root) { return (root || document).querySelector(sel); };
   P.$$ = function (sel, root) { return Array.prototype.slice.call((root || document).querySelectorAll(sel)); };
-  /* Filled by js/api.js from GET /api/public before any module renders. */
-  P.config = {};
-  P.data = { categories: [], projects: [], featuredProjectId: null, featuredText: '', services: [], skills: [], otherSkills: [] };
+  P.config = window.SITE_CONFIG || {};
+  P.data = window.PortfolioData || { categories: [], projects: [], services: [], skills: [], otherSkills: [] };
 
   /* Create an element; text is always set with textContent (never innerHTML). */
   P.el = function (tag, attrs, text) {
@@ -36,7 +35,7 @@
     return /^(https?:\/\/|mailto:)/i.test(u) ? u : '#';
   };
 
-  /* Read "a.b.c" from the config object (looked up at call time, after the server data has loaded). */
+  /* Read "a.b.c" from the config object. */
   P.get = function (path) {
     return String(path).split('.').reduce(function (o, k) { return o == null ? o : o[k]; }, P.config);
   };
