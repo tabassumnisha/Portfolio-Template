@@ -1,5 +1,5 @@
 'use strict';
-/* © 2026 Ride Bangla Limited. Standard Licence, see LICENSE-NOTE.md. */
+/* © 2026 Tabassum Nisha. Standard Licence, see LICENSE-NOTE.md. */
 /* server/routes/crud.js — one generic list/get/create/update/delete route set for a content table.
    Column names come only from the spec in the code (never from the request); values are always bound parameters. */
 const { validate, slugify, HttpError } = require('../validate');
