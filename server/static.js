@@ -1,5 +1,5 @@
 'use strict';
-/* © 2026 Ride Bangla Limited. Standard Licence, see LICENSE-NOTE.md. */
+/* © 2026 Tabassum Nisha. Standard Licence, see LICENSE-NOTE.md. */
 /* server/static.js — serves Project/ and uploaded images. Blocks path traversal and dot-files. */
 const fs = require('node:fs');
 const path = require('node:path');
