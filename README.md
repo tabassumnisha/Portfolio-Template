@@ -77,4 +77,4 @@ Current Chrome, Edge, Firefox and Safari (desktop and mobile).
 The sample content (`Your Name`, `+10000000000`, `hello@example.com`, `https://example.com/...`) is placeholder text in `database/seed.sql`. Visitor messages contain the name, e-mail and text a visitor typed; they are stored only in your database and never sent anywhere else. No cookies are set for visitors; the only cookie is the admin session cookie.
 
 ## Licence
-Standard Licence — one end product per licence. Details and asset sources: [LICENSE-NOTE.md](LICENSE-NOTE.md). © 2026 Ride Bangla Limited.
+Standard Licence — one end product per licence. Details and asset sources: [LICENSE-NOTE.md](LICENSE-NOTE.md). © 2026 Tabassum Nisha.
