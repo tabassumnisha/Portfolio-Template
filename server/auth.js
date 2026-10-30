@@ -1,5 +1,5 @@
 'use strict';
-/* © 2026 Ride Bangla Limited. Standard Licence, see LICENSE-NOTE.md. */
+/* © 2026 Tabassum Nisha. Standard Licence, see LICENSE-NOTE.md. */
 /* server/auth.js — password hashing (scrypt), sessions stored as SHA-256 hashes, CSRF tokens. */
 const crypto = require('node:crypto');
 const { HttpError } = require('./validate');
