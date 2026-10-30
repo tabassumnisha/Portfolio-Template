@@ -1,5 +1,5 @@
 'use strict';
-/* © 2026 Ride Bangla Limited. Standard Licence, see LICENSE-NOTE.md. */
+/* © 2026 Tabassum Nisha. Standard Licence, see LICENSE-NOTE.md. */
 /* server/routes/admin.js — session, own password, dashboard stats, inbox, uploads, settings and user management. */
 const { validate, HttpError, EMAIL_RE } = require('../validate');
 const { readJson, readBody } = require('../http');
