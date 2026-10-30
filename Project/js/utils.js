@@ -1,4 +1,4 @@
-/* © 2026 Ride Bangla Limited. Standard Licence, see LICENSE-NOTE.md. */
+/* © 2026 Tabassum Nisha. Standard Licence, see LICENSE-NOTE.md. */
 /* js/utils.js — tiny shared helpers (namespace: window.Portfolio). Loaded first. */
 (function () {
   'use strict';
