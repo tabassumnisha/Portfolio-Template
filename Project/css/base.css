@@ -34,4 +34,4 @@ button,input,textarea,select{font:inherit}
 .skip-link:focus{top:12px}
 :focus-visible{outline:3px solid #c79bff;outline-offset:3px}
 .light :focus-visible{outline-color:var(--violet)}
-noscript .noscript-note{display:block;margin:24px auto;max-width:620px;padding:16px 20px;border-radius:12px;background:#fff7e0;color:#5a4300;text-align:center}
+noscript .noscript-note,.noscript-note[role="alert"]{display:block;margin:24px auto;max-width:620px;padding:16px 20px;border-radius:12px;background:#fff7e0;color:#5a4300;text-align:center}

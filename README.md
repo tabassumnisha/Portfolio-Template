@@ -1,78 +1,78 @@
-# Responsive Creative Portfolio Website Template
+# Creative Portfolio CMS
 
-A polished, **responsive single-page portfolio template for designers and freelancers**. It showcases your work in a filterable project gallery, presents your services, tells your story, and turns visitors into clients through contact links and a **WhatsApp inquiry flow** that opens a chat with a prefilled message.
+A **complete portfolio website with a built-in admin panel** for designers, freelancers and creative studios. Visitors see a polished, responsive single-page portfolio; you sign in to `/admin/` to manage everything — projects, categories, services, skills, site texts, photos, social links — and read the messages visitors send through the contact form. No code editing is needed to run your site.
 
-Built with **HTML5, CSS3 and vanilla JavaScript**. Frontend-only: no backend, no database, no build step, no npm packages, no CDN requests, no tracking. Customise a single config file, upload the folder, and you are live.
+Built with **Node.js (built-in HTTP server) + SQLite + vanilla JavaScript**. **Zero third-party dependencies**: no `npm install`, no build step, no CDN requests, no tracking.
 
-| Desktop | Mobile |
+| Website | Admin panel (mobile) |
 |---|---|
-| ![Desktop screenshot of the hero section](docs/screenshots/desktop.png) | ![Mobile screenshot of the hero section](docs/screenshots/mobile.png) |
+| ![Website hero section](docs/screenshots/desktop.png) | ![Admin panel on a phone](docs/screenshots/admin-mobile-projects.png) |
 
-![Desktop screenshot of the services and portfolio gallery](docs/screenshots/desktop-gallery.png)
-
-**Live demo:** the public demo URL is shown on the marketplace listing where you bought this template.
+![Admin dashboard](docs/screenshots/admin-dashboard.png)
 
 ---
 
-## Who is it for?
+## What you get
 
-- Graphic designers, UI/UX designers, illustrators and brand designers
-- Freelancers and creative studios who need a fast, professional online portfolio
-- Developers who want a clean, well-structured static starter for a client's portfolio
+**Public website** (`/`)
+- Hero, About, Services, Portfolio gallery with category filters, Skills, Featured project and Contact sections
+- Every text, image, project, service and skill comes from the database; nothing is hard-coded
+- Contact form that saves messages to your private inbox, plus prefilled WhatsApp buttons
+- Responsive from 320 px phones to wide desktops, keyboard accessible, reduced-motion aware
 
-## Features
+**Admin panel** (`/admin/`)
+- Secure sign-in, sign-out and change-password
+- Dashboard with unread-message count and quick stats
+- **Projects**: add/edit/delete, upload images, publish/hide, choose the featured project
+- **Categories, Services, Skills, Other skills**: full add/edit/delete with ordering
+- **Messages inbox**: read, mark unread, reply by e-mail, delete
+- **Site settings**: name, role, intro, about, photos, contact details, social links, page texts
+- **Users and roles**: `admin` (everything) and `editor` (content and messages only)
 
-- **Hero, About, Services, Portfolio, Skills, Featured project and Contact** sections in one page
-- **Project gallery with category filters**: keyboard-operable buttons, live "Showing N projects" status for screen readers
-- **Data-driven content**: gallery cards, filters, service cards and skill rings are generated from `js/data.js`; add a project by adding one object
-- **WhatsApp inquiry flow**: every WhatsApp button and the contact form open `wa.me` with a prefilled, URL-encoded message; nothing is stored or sent to a server
-- **One config file** (`config.example.js`) for your name, initials, role, WhatsApp number, e-mail, social links and footer text
-- **Responsive** from 320 px phones to wide desktops, with a mobile navigation menu
-- **Accessible**: semantic landmarks, skip link, labelled sections, alt text on every image, visible focus, reduced-motion support
-- **Fast and private**: no frameworks, no third-party requests, works offline from `file://`
-- **Clean structure**: CSS split into `base`, `layout`, `components`, `responsive`; JS split by feature
-- **Themeable** through CSS variables
-- **Strict-CSP friendly** (an nginx example with a Content-Security-Policy is in `HowToSetup.md`)
+## Quick start (3 minutes)
 
-## Quick start
+Requires **Node.js 22.13 or newer** (`node -v`).
 
-1. Unzip the package.
-2. Open `Portfolio Site/index.html` in your browser (or run `python3 -m http.server 8080` inside `Portfolio Site/`).
-3. Edit `Portfolio Site/config.example.js` with your details and `Portfolio Site/js/data.js` with your projects.
-4. Upload the `Portfolio Site/` folder to Netlify, GitHub Pages or your own server.
+```bash
+cp .env.example .env          # then set ADMIN_EMAIL and ADMIN_PASSWORD (10+ characters) in .env
+npm start
+```
 
-Full instructions, including nginx on a VPS: **[HowToSetup.md](HowToSetup.md)**.
+Open http://localhost:3000 for the website and http://localhost:3000/admin/ to sign in. After the first start, **delete the `ADMIN_PASSWORD` line** from `.env`. Full guide (VPS, Docker, HTTPS, backups): [HowToSetup.md](HowToSetup.md).
 
 ## What is in the package
 
 ```text
-README.md                 this file
-HowToSetup.md             local preview, Netlify, GitHub Pages, VPS/nginx, branding, WhatsApp, images
-CLAUDE.md                 guide for AI coding tools
-CHANGELOG.md              version history (1.0.0)
-LICENSE-NOTE.md           template licence + rights and sources of every bundled asset
-Portfolio Site/
-├── index.html
-├── config.example.js     the only configuration file (placeholders)
-├── css/                  base.css · layout.css · components.css · responsive.css
-├── js/                   data.js · utils.js · content.js · gallery.js · services.js ·
-│                         nav.js · whatsapp-inquiry.js · effects.js · main.js
-└── assets/images/        original placeholder artwork
-docs/
-├── customisation.md      theme colours, adding projects and services, fonts
-└── screenshots/          images used in this README
+server/            HTTP server, API routes, authentication, uploads (plain Node.js, no packages)
+database/          schema.sql (tables, keys, indexes) and seed.sql (placeholder sample content)
+Project/           the website (index.html, css/, js/, assets/) and the admin panel (admin/)
+test/              automated API and security tests  ->  npm test
+docs/              customisation guide, API reference, screenshots
+.env.example       every setting, with safe placeholders
+Dockerfile · docker-compose.yml
+README.md · HowToSetup.md · CLAUDE.md · CHANGELOG.md · LICENSE-NOTE.md
+```
+
+## Security model
+
+- Passwords are hashed with **scrypt** (per-user salt). Sessions are random tokens stored only as SHA-256 hashes; the cookie is `HttpOnly` and `SameSite=Strict` (and `Secure` over HTTPS).
+- **Every endpoint that creates, updates or deletes data requires a signed-in user and a CSRF token.** Only two writes are public by design: the contact form (rate limited, validated, honeypot) and the sign-in itself (rate limited). `npm test` proves this by walking the whole route table.
+- Roles are enforced on the server: editors cannot change settings or manage users.
+- All SQL uses bound parameters; all output in the admin panel and website is set with `textContent`; a strict Content-Security-Policy (`script-src 'self'`) is sent with every page.
+- Uploads are accepted only if the file's bytes are a real JPG, PNG, WebP or GIF (SVG and HTML are refused) and are stored under random names.
+- No credentials ship in the package: the first admin comes from your own `.env`.
+
+## Tests
+
+```bash
+npm test      # 16 automated tests: auth, roles, CSRF, validation, uploads, rate limiting, path traversal
 ```
 
 ## Browser support
-
-Current versions of Chrome, Edge, Firefox and Safari (desktop and mobile).
+Current Chrome, Edge, Firefox and Safari (desktop and mobile).
 
 ## Placeholders and privacy
-
-All names, numbers, e-mail addresses and links shipped in the template are placeholders (`+10000000000`, `hello@example.com`, `https://example.com/...`). The template contains no analytics, API keys or private URLs, and it does not collect visitor data.
+The sample content (`Your Name`, `+10000000000`, `hello@example.com`, `https://example.com/...`) is placeholder text in `database/seed.sql`. Visitor messages contain the name, e-mail and text a visitor typed; they are stored only in your database and never sent anywhere else. No cookies are set for visitors; the only cookie is the admin session cookie.
 
 ## Licence
-
-Sold under the **Standard Licence** (one end product per licence). You may modify the template and use it for one website; you may not resell or redistribute the template itself. All bundled images are original artwork; no third-party fonts or libraries are bundled. Read the full terms and the asset-rights table in **[LICENSE-NOTE.md](LICENSE-NOTE.md)**.
-
-© 2026 Ride Bangla Limited.
+Standard Licence — one end product per licence. Details and asset sources: [LICENSE-NOTE.md](LICENSE-NOTE.md). © 2026 Ride Bangla Limited.

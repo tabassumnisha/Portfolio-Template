@@ -1,6 +1,6 @@
 # Customisation guide
 
-Paths are relative to `Portfolio Site/`. No build step: edit, save, reload.
+Content (projects, services, skills, texts, photos, links) is edited in the **admin panel** at `/admin/`, no code needed. This guide covers the things that live in code. Paths are relative to `Project/`. No build step: edit, save, reload.
 
 ## 1. Theme colours
 
@@ -36,39 +36,17 @@ The theme variables are at the top of `css/base.css`, inside `:root { … }`.
 
 A few decorative gradients (hero glow, filter-pill gradient, skill-ring gradients, sample banners) use fixed colour values written directly in `css/layout.css` and `css/components.css`; search for `#7b3cff`, `#6f32f5`, `#8e48ff` and `rgba(123,60,255` if you want to recolour those too. The skill-ring gradient stops are defined in the SVG sprite in `index.html` (`#ringA`, `#ringB`).
 
-## 2. Add a project to the gallery
+## 2. Add or change projects, categories, services and skills
 
-1. Put the image in `assets/images/` (recommended **1200×900 px**, JPG/WebP, under 200 KB).
-2. Open `js/data.js` and add an object to `projects`:
+Do it in the admin panel (`/admin/`): **Projects**, **Categories**, **Services**, **Skills**, **Other skills**. Each has an *Order* field (lower numbers first). Categories become the gallery filter buttons; a category without a published project is hidden. Service icons are chosen from the sprite in `index.html` (briefcase, image, code, globe, heart, rocket).
 
-```js
-{ id: "coffee-brand", title: "Coffee Shop Brand", subtitle: "Logo Design",
-  category: "branding", image: "coffee-brand.jpg",
-  alt: "Logo, cup and signage design for a neighbourhood coffee shop" }
-```
+## 3. Edit texts, photos, contact details and social links
 
-3. `category` must be one of the `id` values in `categories`. `alt` is required.
-4. To change which project is highlighted in the "Featured project" band, set `featuredProjectId` to a project's `id`.
+Admin panel -> **Site settings**. Text elements in `index.html` use `data-bind="group.key"` (for example `owner.name`); to expose a new setting see the checklist in `CLAUDE.md`.
 
-### Add a new filter category
+## 4. Skills
 
-Add `{ id: "illustration", label: "Illustration" }` to `categories`, then use `category: "illustration"` in the relevant projects. The filter button appears automatically.
-
-## 3. Add a new service card
-
-Add an object to `services` in `js/data.js`:
-
-```js
-{ icon: "i-image", title: "Illustration", text: "Custom illustrations for books, brands and editorial work." }
-```
-
-`icon` is the id of a symbol in the SVG sprite at the top of `index.html`. Available: `i-briefcase`, `i-image`, `i-code`, `i-globe`, `i-heart`, `i-rocket`, `i-pin`, `i-mail`, `i-arrow`. To add your own icon, add a `<symbol id="i-yours" viewBox="0 0 24 24">…</symbol>` to the sprite (24×24, stroke-based, no fill).
-
-The grid reflows automatically: 3 columns on desktop, 2 on tablet, 1 on phones.
-
-## 4. Edit skills
-
-`skills` in `js/data.js`: `{ name, short, level, ring }`. `level` is 0–100; `ring` is `"A"` or `"B"` (two gradient styles). `otherSkills` is a plain list of tags. Do not claim skill levels you cannot back up; remove the section from `index.html` (`#skills`) and the nav link if you do not want it.
+`level` is 0-100 and `ring` is A or B (two gradient styles). Do not claim skill levels you cannot back up; remove the `#skills` section from `index.html` and its nav link if you do not want it.
 
 ## 5. Add or remove a section
 
@@ -92,4 +70,4 @@ No font files are bundled. By default the template uses the first installed font
 
 ## 7. Change the contact flow
 
-All WhatsApp behaviour is in `js/whatsapp-inquiry.js`. To change the message format, edit `formMessage()`. To remove the form entirely, delete the `<form id="contactForm">` block; the WhatsApp and e-mail rows keep working.
+Visitor messages are saved by `POST /api/contact` (`server/routes/public.js`) and read in the admin panel under **Messages**. The form logic is in `js/contact.js`; WhatsApp buttons use the number from Site settings. To add e-mail notifications, send a mail from the `/api/contact` handler with your own SMTP service (not included, to keep the package dependency-free).
