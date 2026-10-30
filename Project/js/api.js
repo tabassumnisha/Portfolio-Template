@@ -1,4 +1,4 @@
-/* © 2026 Ride Bangla Limited. Standard Licence, see LICENSE-NOTE.md. */
+/* © 2026 Tabassum Nisha. Standard Licence, see LICENSE-NOTE.md. */
 /* js/api.js — loads the site content (settings, projects, services, skills) from the server: GET /api/public. */
 (function () {
   'use strict';
