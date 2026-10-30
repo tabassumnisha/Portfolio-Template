@@ -4,6 +4,8 @@ A **complete portfolio website with a built-in admin panel** for designers, free
 
 Built with **Node.js (built-in HTTP server) + SQLite + vanilla JavaScript**. **Zero third-party dependencies**: no `npm install`, no build step, no CDN requests, no tracking.
 
+> **Important — live demo and GitHub Pages:** GitHub Pages only hosts static files; it cannot run this CMS's Node.js API, admin authentication, or SQLite database. The existing `https://tabassumnisha.github.io/Portfolio-Template/` link is therefore a static frontend preview, not a working CMS demo. For Vibe96 review, deploy this full package to a Node.js 22.13+ host with persistent storage, then provide a separate demo login through the marketplace form. Never put demo or production credentials in this public repository.
+
 | Website | Admin panel (mobile) |
 |---|---|
 | ![Website hero section](docs/screenshots/desktop.png) | ![Admin panel on a phone](docs/screenshots/admin-mobile-projects.png) |
