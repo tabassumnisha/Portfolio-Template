@@ -1,5 +1,5 @@
 'use strict';
-/* © 2026 Ride Bangla Limited. Standard Licence, see LICENSE-NOTE.md. */
+/* © 2026 Tabassum Nisha. Standard Licence, see LICENSE-NOTE.md. */
 /* server/scripts/create-admin.js — create an administrator, or reset a forgotten password.
    Usage:  npm run create-admin                      (asks for e-mail, name and password)
            ADMIN_EMAIL=a@b.com ADMIN_PASSWORD='long password' npm run create-admin   (non-interactive) */
