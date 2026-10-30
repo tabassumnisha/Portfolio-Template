@@ -1,5 +1,5 @@
 'use strict';
-/* © 2026 Ride Bangla Limited. Standard Licence, see LICENSE-NOTE.md. */
+/* © 2026 Tabassum Nisha. Standard Licence, see LICENSE-NOTE.md. */
 /* test/api.test.js — run with `npm test`. Starts the real server on a temporary database (no network, no dependencies). */
 const test = require('node:test');
 const assert = require('node:assert/strict');
