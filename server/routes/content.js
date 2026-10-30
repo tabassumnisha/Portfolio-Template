@@ -1,5 +1,5 @@
 'use strict';
-/* © 2026 Ride Bangla Limited. Standard Licence, see LICENSE-NOTE.md. */
+/* © 2026 Tabassum Nisha. Standard Licence, see LICENSE-NOTE.md. */
 /* server/routes/content.js — categories, projects, services, skills, other skills (all staff-only). */
 const { crud } = require('./crud');
 const { HttpError, validate } = require('../validate');
