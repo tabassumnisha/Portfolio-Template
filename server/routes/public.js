@@ -1,5 +1,5 @@
 'use strict';
-/* © 2026 Ride Bangla Limited. Standard Licence, see LICENSE-NOTE.md. */
+/* © 2026 Tabassum Nisha. Standard Licence, see LICENSE-NOTE.md. */
 /* server/routes/public.js — the only routes anyone can call without signing in:
    GET /api/health, GET /api/public (site content), POST /api/contact (visitor inquiry, rate limited), POST /api/auth/login. */
 const { validate, HttpError } = require('../validate');
