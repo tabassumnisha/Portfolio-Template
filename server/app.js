@@ -1,5 +1,5 @@
 'use strict';
-/* © 2026 Ride Bangla Limited. Standard Licence, see LICENSE-NOTE.md. */
+/* © 2026 Tabassum Nisha. Standard Licence, see LICENSE-NOTE.md. */
 /* server/app.js — builds the HTTP server: security headers, CSRF/origin checks, auth + role guard, routing, static files. */
 const http = require('node:http');
 const dbModule = require('./db');
