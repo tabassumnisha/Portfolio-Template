@@ -1,5 +1,5 @@
 'use strict';
-/* © 2026 Ride Bangla Limited. Standard Licence, see LICENSE-NOTE.md. */
+/* © 2026 Tabassum Nisha. Standard Licence, see LICENSE-NOTE.md. */
 /* server/config.js — reads .env (if present) and process.env. Real environment variables win over the file. */
 const fs = require('node:fs');
 const path = require('node:path');
