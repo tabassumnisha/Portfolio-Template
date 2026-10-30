@@ -130,7 +130,7 @@ docker compose up -d --build
 Open `http://localhost:3000/admin/`. Data is stored in the named volume `portfolio-data`. Put a reverse proxy with HTTPS in front for production and set `COOKIE_SECURE=true`, `TRUST_PROXY=true` in `.env`.
 
 ### 6.3 Platform-as-a-service (Render, Railway, Fly.io, …)
-Create a Node web service, start command `npm start`, add a **persistent disk/volume** and set `DATA_DIR` to a path on it. Set `ADMIN_EMAIL`, `ADMIN_PASSWORD` (first deploy only, then remove), `COOKIE_SECURE=true`, `TRUST_PROXY=true`. Without a persistent disk your content and messages are lost on every redeploy.
+A `render.yaml` blueprint is included for Render. Import the repository and review the selected paid service plan and persistent-disk charge before deploying. Set `ADMIN_EMAIL` and `ADMIN_PASSWORD` as private environment variables in the host dashboard; do not add them to the repository. The blueprint sets `DATA_DIR=/var/data`, `COOKIE_SECURE=true`, and `TRUST_PROXY=true`. On other hosts, use start command `npm start`, mount a **persistent disk/volume**, and point `DATA_DIR` to it. Without persistent storage, the SQLite database, uploads, and messages may be lost on redeploy or restart. After the first administrator is created, remove `ADMIN_PASSWORD` from the host environment if the platform allows it safely; password changes should then be managed through the admin panel.
 
 ## 7. Demo site for marketplace reviewers
 A reviewer must be able to sign in. On your public demo deployment:
