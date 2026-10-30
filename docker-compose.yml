@@ -1,13 +1,26 @@
-# Serves the static site in Project/ with nginx. No build step, no database, no secrets.
-#   docker compose up -d      then open http://localhost:8080
-#   docker compose down       to stop
-# The host port can be changed with PORTFOLIO_PORT in a local .env (see .env.example).
+# Runs the CMS in a container with a persistent volume for the database and uploads.
+#   1. cp .env.example .env   and set ADMIN_EMAIL / ADMIN_PASSWORD (first start only)
+#   2. docker compose up -d --build
+#   3. open http://localhost:3000/admin/
+# Behind HTTPS set COOKIE_SECURE=true; behind a reverse proxy also TRUST_PROXY=true (see HowToSetup.md).
 services:
   portfolio:
-    image: nginx:1.27-alpine
-    container_name: portfolio-template
+    build: .
+    container_name: portfolio-cms
     ports:
-      - "${PORTFOLIO_PORT:-8080}:80"
+      - "${PORT:-3000}:3000"
+    environment:
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+      ADMIN_NAME: ${ADMIN_NAME:-Administrator}
+      COOKIE_SECURE: ${COOKIE_SECURE:-auto}
+      TRUST_PROXY: ${TRUST_PROXY:-false}
+      SESSION_HOURS: ${SESSION_HOURS:-12}
+      MAX_UPLOAD_MB: ${MAX_UPLOAD_MB:-5}
+      SEED_SAMPLE_DATA: ${SEED_SAMPLE_DATA:-true}
     volumes:
-      - ./Project:/usr/share/nginx/html:ro
+      - portfolio-data:/app/data
     restart: unless-stopped
+
+volumes:
+  portfolio-data:

@@ -1,15 +1,14 @@
-/* © 2026 Ride Bangla Limited. Standard Licence, see LICENSE-NOTE.md. */
-/* js/gallery.js — builds the filter buttons and project cards from js/data.js and handles filtering.
+/* © 2026 Tabassum Nisha. Standard Licence, see LICENSE-NOTE.md. */
+/* js/gallery.js — builds the filter buttons and project cards from the server data and handles filtering.
    Filter buttons are real <button> elements: operable with Tab, Enter and Space (aria-pressed). */
 (function () {
   'use strict';
   var P = window.Portfolio, $ = P.$, $$ = P.$$;
-  var IMG_DIR = 'assets/images/';
 
   function buildCard(p, i) {
     var card = P.el('article', { 'class': 'project reveal' + (i % 3 ? ' delay-' + (i % 3) : ''), 'data-category': p.category, 'data-id': p.id });
     var slot = P.el('div', { 'class': 'slot', 'data-file': p.image });
-    var img = P.el('img', { src: IMG_DIR + p.image, alt: p.alt || p.title, loading: 'lazy', width: '1200', height: '900' });
+    var img = P.el('img', { src: p.image, alt: p.alt || p.title, loading: 'lazy', width: '1200', height: '900' });
     img.addEventListener('error', function () { img.remove(); });
     slot.appendChild(img);
     card.appendChild(slot);
@@ -54,8 +53,8 @@
     var d = P.data, p = d.projects.filter(function (x) { return x.id === d.featuredProjectId; })[0] || d.projects[0];
     var img = $('#featuredImage'), link = $('#featuredLink'), title = $('#featuredTitle'), text = $('#featuredText');
     if (!p || !img) return;
-    img.src = IMG_DIR + p.image; img.alt = p.alt || p.title;
-    if (link) link.href = IMG_DIR + p.image;
+    img.src = p.image; img.alt = p.alt || p.title;
+    if (link) link.href = p.image;
     if (title) title.textContent = p.title;
     if (text) text.textContent = d.featuredText || '';
   }
