@@ -1,40 +1,27 @@
 # Changelog
 
-All notable changes to this template are recorded here. The format follows [Keep a Changelog](https://keepachangelog.com/) and the project uses [Semantic Versioning](https://semver.org/).
+Format: [Keep a Changelog](https://keepachangelog.com/). Versions follow semantic versioning.
 
-## [1.0.1] — 2026-10-29
-
+## [1.2.0] — 2026-10-31
 ### Added
-- `.env.example` listing every configuration value with a placeholder and a comment (reference only; the template does not read it at runtime).
-- `docker-compose.yml` to serve the site with nginx, and a "Deploy with Docker" section in `HowToSetup.md`.
-- Optional `database/schema.sql` and `database/seed.sql` mirroring the content of `js/data.js`, and a "Database and first admin login" section in `HowToSetup.md` explaining that the template has no database, admin area or authenticated endpoints.
-- "Security model" section in `README.md`.
-
+- Form-based admin panel (`/admin/`): site profile, projects, categories, services, skills and tags, with add, edit, reorder and delete; no JSON editing needed.
+- Image upload for projects and the hero/about photos (JPG, PNG, WebP, GIF, 3 MB maximum, checked by file signature).
+- Strict Content-Security-Policy headers, a session-check endpoint and end-to-end tests (sign-in, roles, validation, uploads).
+- `.gitignore`, `docs/api.md`, admin screenshots.
 ### Changed
-- The application folder `Portfolio Site/` is now `Project/`; all documentation paths were updated.
+- Admin panel moved out of `server.py` into `Project/admin/`; validation moved to `validation.py`, upload helpers to `uploads.py`.
+- Content validation is stricter (unknown fields rejected, categories and featured project must exist, links must be http/https).
+- Logout and password change now also require the anti-CSRF header.
+- Config file renamed from `config.example.js` to `config.js`; `.env.example` documents every variable.
+- Company name and licence terms (Ride Bangla Limited) restored in `LICENSE-NOTE.md` and source headers.
+### Removed
+- `RELEASE-CHECKLIST.md` (internal notes) and the empty `__pycache__` folder from the package.
 
-### Fixed
-- Comment in `js/data.js` referred to a non-existent `js/skills.js`.
+## [1.1.1] — 2026-10-31
+- Removed a duplicate database initialisation call, added per-IP sign-in throttling, hardened JSON parsing.
 
-## [1.0.0] — 2026-10-27
+## [1.1.0] — 2026-10-30
+- Added SQLite-backed content, admin sign-in, sessions, password change, Docker deployment and tests.
 
-Initial release.
-
-### Added
-- Responsive single-page portfolio: hero, about, services, portfolio gallery, skills, featured project and contact sections.
-- Project gallery with keyboard-operable category filters (`aria-pressed`) and a live "Showing N projects" status for screen readers.
-- Services section with six cards generated from data.
-- Animated skill rings and an "Other skills" tag list generated from data.
-- WhatsApp inquiry flow: prefilled `wa.me` links on every WhatsApp button and a contact form that opens WhatsApp with the visitor's message (`encodeURIComponent`, `rel="noopener noreferrer"`); no visitor data is stored or sent to a server.
-- Single placeholder config file, `config.example.js` (owner name, initials, role, WhatsApp number, e-mail, social links, footer text).
-- Data file `js/data.js` for projects, filter categories, services and skills.
-- Mobile navigation menu (opens with button, closes with link click, outside click or Esc).
-- Accessibility: semantic landmarks, skip link, labelled sections, alt text on every image, visible focus styles, reduced-motion support.
-- CSS split by concern (`base`, `layout`, `components`, `responsive`) with theme variables in `:root`.
-- JavaScript split by feature (`nav`, `gallery`, `services`, `whatsapp-inquiry`, `content`, `effects`).
-- Original placeholder artwork (no real people, no third-party brands).
-- Documentation: `README.md`, `HowToSetup.md`, `CLAUDE.md`, `LICENSE-NOTE.md`, `docs/customisation.md`.
-- Licence: Standard Licence (one end product), see `LICENSE-NOTE.md`.
-
-### Notes
-- No build step, no npm packages, no CDN requests. Works from `file://` and from any static host.
+## [1.0.0] — 2026-10-28
+- Initial responsive static portfolio template with project filters, services, skills and WhatsApp inquiry links.

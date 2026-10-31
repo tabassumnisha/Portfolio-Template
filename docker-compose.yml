@@ -1,13 +1,24 @@
-# Serves the static site in Project/ with nginx. No build step, no database, no secrets.
-#   docker compose up -d      then open http://localhost:8080
-#   docker compose down       to stop
-# The host port can be changed with PORTFOLIO_PORT in a local .env (see .env.example).
 services:
   portfolio:
-    image: nginx:1.27-alpine
-    container_name: portfolio-template
+    build: .
+    container_name: portfolio-cms
+    env_file:
+      - .env
+    environment:
+      HOST: 0.0.0.0
+      PORT: 8080
+      DATABASE_PATH: /app/data/portfolio.sqlite3
     ports:
-      - "${PORTFOLIO_PORT:-8080}:80"
+      - "${PORTFOLIO_PORT:-8080}:8080"
     volumes:
-      - ./Project:/usr/share/nginx/html:ro
+      - portfolio_data:/app/data
     restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    read_only: true
+    tmpfs:
+      - /tmp
+volumes:
+  portfolio_data:

@@ -1,5 +1,5 @@
 /* © 2026 Ride Bangla Limited. Standard Licence, see LICENSE-NOTE.md. */
-/* js/content.js — applies SITE_CONFIG (config.example.js) to the page text, images and links. */
+/* js/content.js — applies SITE_CONFIG (config.js) to the page text, images and links. */
 (function () {
   'use strict';
   var P = window.Portfolio, $ = P.$, $$ = P.$$, cfg = P.config;

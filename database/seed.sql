@@ -1,7 +1,7 @@
 -- ============================================================================
--- database/seed.sql — demo data for the OPTIONAL schema in schema.sql
--- Generated from Project/js/data.js (the placeholder content shown on the live demo).
--- Run schema.sql first. Placeholders only: no real names, contacts or credentials.
+-- database/seed.sql — initial demo records for schema.sql
+-- Run after schema.sql on an empty database. These records populate the relational catalogue.
+-- Runtime JSON content is initialized from database/default-portfolio.json and default-config.json.
 -- ============================================================================
 
 INSERT INTO categories (id, label, sort_order) VALUES

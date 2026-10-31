@@ -1,6 +1,6 @@
 # LICENSE NOTE
 
-**Product:** Responsive Creative Portfolio Website Template, version 1.0.0
+**Product:** Responsive Creative Portfolio CMS (portfolio website with admin panel), version 1.2.0
 **Licensor:** Ride Bangla Limited, Faridpur, Bangladesh, info@ridebangla.bd
 **Copyright:** © 2026 Ride Bangla Limited. All rights reserved, except as expressly granted below.
 
@@ -20,7 +20,7 @@ With one Standard Licence you may:
 1. Use the Template to build **one (1) End Product**, either for yourself or for one client.
 2. Modify, translate, restyle and extend the Template without limit (change colours, text, sections, images and code).
 3. Replace the sample images with your own work and use your own name, brand and contact details.
-4. Install the End Product on any hosting you control (static hosting, GitHub Pages, Netlify, your own VPS).
+4. Install the End Product on any hosting you control (your own VPS, a Docker host or a managed Python/Docker platform; the static preview in `Project/` also runs on GitHub Pages or Netlify without the admin panel).
 5. Keep a private backup copy of the Template.
 
 Need to build more than one End Product (for example for several clients)? Purchase one licence per End Product.
@@ -40,10 +40,10 @@ The finished End Product (your website, its content, your own images and text) b
 The Template is licensed, not sold. The Licensor keeps all ownership and all rights not expressly granted here, including the right to reuse its own pre-existing tools, components and know-how.
 
 ### 5. Third-party components
-This Template contains no third-party code libraries and loads nothing from a CDN. Items listed in Part B keep their own licences, and their notices must not be removed.
+This Template contains no third-party code libraries, uses only the Python standard library and loads nothing from a CDN. Items listed in Part B keep their own licences, and their notices must not be removed.
 
 ### 6. Support and updates
-Support and updates are provided only as described on the marketplace listing where you bought the Template or in a separate written agreement. Documentation is in `README.md`, `HowToSetup.md` and `docs/customisation.md`.
+Support and updates are provided only as described on the marketplace listing where you bought the Template or in a separate written agreement. Documentation is in `README.md`, `HowToSetup.md`, `docs/customisation.md` and `docs/api.md`.
 
 ### 7. No warranty and limit of liability
 THE TEMPLATE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING FITNESS FOR A PARTICULAR PURPOSE. TO THE EXTENT THE LAW ALLOWS, THE LICENSOR IS NOT LIABLE FOR ANY INDIRECT OR CONSEQUENTIAL LOSS, AND ITS TOTAL LIABILITY IS LIMITED TO THE PRICE YOU PAID FOR THE TEMPLATE. Nothing here limits any right you have under consumer law that cannot be excluded.
@@ -85,8 +85,9 @@ All icons are inline SVG symbols in the `<svg>` sprite at the top of `index.html
 The social-network glyphs (Facebook, X, Instagram, GitHub, Telegram, Reddit, WhatsApp) are simple link icons. The names and marks belong to their respective owners and are used only to point to the buyer's own profiles; this does not imply endorsement.
 
 ### B4. Code and dependencies
-- No npm packages, no `package.json`, no CDN scripts or stylesheets, no analytics, no tracking, no cookies.
-- All HTML, CSS and JavaScript were written for this Template and are covered by Part A.
+- No npm packages, no `package.json`, no pip packages, no CDN scripts or stylesheets, no analytics and no tracking. The only cookie is the admin sign-in session cookie, set after a successful admin login.
+- The Dockerfile starts from the official `python:3.12-slim` image. Pin it to a current patch release or digest when you deploy.
+- All HTML, CSS, JavaScript, Python and SQL were written for this Template and are covered by Part A.
 
 ### B5. Credentials and personal data
-All names, phone numbers, e-mail addresses and social links in the Template are placeholders (`+10000000000`, `hello@example.com`, `https://example.com/...`). The only real contact detail in the package is the Licensor's address in this file.
+All names, phone numbers, e-mail addresses and social links in the Template are placeholders (`+10000000000`, `hello@example.com`, `https://example.com/...`). The only real contact detail in the package is the Licensor's address in this file. No default admin password ships: the administrator is created from your own `.env` on first start.

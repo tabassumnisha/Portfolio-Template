@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Portfolio CMS — Admin</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>Portfolio CMS</h1>
+        <p class="muted">Manage your portfolio content. Saved changes appear on the public site.</p>
+      </div>
+      <nav class="row" aria-label="Admin">
+        <a href="/" target="_blank" rel="noopener noreferrer">View site</a>
+        <button id="logout" type="button" class="secondary hidden">Log out</button>
+      </nav>
+    </header>
+
+    <main id="main">
+      <section id="login" class="card" aria-labelledby="loginTitle">
+        <h2 id="loginTitle">Admin sign in</h2>
+        <p class="muted">Use the administrator account created on the first start (see HowToSetup.md).</p>
+        <form id="loginForm">
+          <div class="field"><label for="email">Email</label><input id="email" type="email" autocomplete="username" required></div>
+          <div class="field"><label for="password">Password</label><input id="password" type="password" autocomplete="current-password" required></div>
+          <button type="submit">Sign in</button>
+        </form>
+        <div id="loginStatus" class="status" role="status"></div>
+      </section>
+
+      <section id="editor" class="hidden" aria-label="Content editor">
+        <div id="tabs" class="tabs" role="navigation" aria-label="Sections"></div>
+        <div id="panel"></div>
+        <div id="saveBar" class="savebar hidden">
+          <button id="save" type="button">Save changes</button>
+          <span id="saveStatus" class="status" role="status"></span>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="core.js"></script>
+  <script src="editors.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>

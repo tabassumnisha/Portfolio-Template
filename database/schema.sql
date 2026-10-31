@@ -1,15 +1,12 @@
 -- ============================================================================
--- database/schema.sql — OPTIONAL data schema for the Portfolio Template
+-- database/schema.sql — schema for the Portfolio CMS application
 --
--- The template itself is frontend-only: it needs NO database and never connects
--- to one. Its content lives in Project/js/data.js. This script describes the same
--- content (categories, projects, services, skills) as relational tables, for a
--- buyer who later wants to manage it in a database or CMS of their own.
+-- Runtime database for portfolio records, admin accounts, and CMS JSON content.
 --
 -- Standard SQL, tested on SQLite 3. It should also run on PostgreSQL and MariaDB.
 -- On MySQL, delete "IF NOT EXISTS" from the CREATE INDEX line (MySQL does not support it).
 -- Contains no credentials and no personal data.
--- Order: schema.sql first, then seed.sql (see HowToSetup.md, section "Database").
+-- Startup initializes this schema and seeds demo records when the database is empty.
 -- ============================================================================
 
 CREATE TABLE IF NOT EXISTS categories (
@@ -54,4 +51,19 @@ CREATE TABLE IF NOT EXISTS other_skills (
 CREATE TABLE IF NOT EXISTS site_settings (
   setting_key    VARCHAR(60)  NOT NULL PRIMARY KEY,  -- featuredProjectId, featuredText
   setting_value  VARCHAR(500) NOT NULL
+);
+
+
+-- Application runtime tables (SQLite)
+CREATE TABLE IF NOT EXISTS admin_users (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  email TEXT NOT NULL UNIQUE,
+  password_hash TEXT NOT NULL,
+  role TEXT NOT NULL CHECK(role IN ('admin')),
+  created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE IF NOT EXISTS app_content (
+  content_key TEXT PRIMARY KEY CHECK(content_key IN ('portfolio','config')),
+  json_value TEXT NOT NULL,
+  updated_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

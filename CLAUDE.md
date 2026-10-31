@@ -3,61 +3,44 @@
 Guidance for AI coding tools (Claude Code, Copilot, Cursor, etc.) working on this repository.
 
 ## What this is
-A frontend-only, responsive creative portfolio template (HTML5 + CSS3 + vanilla JS). **No backend, no database, no build step, no npm, no tests.** Keep it that way: do not add frameworks, bundlers, packages, CDN links, analytics or a real `.env`. `.env.example` is a documentation-only list of the `config.example.js` settings (placeholders only); keep it in sync when a config key changes.
+**Responsive Creative Portfolio CMS**: a portfolio website plus an admin panel. Backend = Python standard library (`http.server`, `sqlite3`, `hashlib`) in `server.py`; frontend = vanilla HTML/CSS/JS. **No pip or npm packages, no build step, no CDN, no analytics.** Keep it that way. Requires Python >= 3.10.
 
-## Folder layout
+## Architecture and folder map
 ```text
-README.md · HowToSetup.md · CLAUDE.md · CHANGELOG.md · LICENSE-NOTE.md
-.env.example            placeholder list of every config value (not read at runtime)
-docker-compose.yml      nginx container serving Project/ (no build step)
-database/               optional schema.sql + seed.sql mirroring js/data.js (the site does not use them)
-Project/
-  index.html            semantic sections + inline SVG icon sprite; contains NO real data
-  config.example.js     the ONLY config file (window.SITE_CONFIG): owner, images, contact, social, site text
-  css/
-    base.css            :root theme variables, reset, helpers (.sr-only, .skip-link), reveal effects
-    layout.css          header, hero, section frames, grids, footer
-    components.css      buttons, cards, slots, forms, rings, chips, banners, service cards
-    responsive.css      all media queries (1024 / 820 / 560 / 380, hover, reduced motion)
-  js/
-    data.js             PortfolioData: categories, projects, featuredProjectId, services, skills
-    utils.js            window.Portfolio helpers: $, $$, el, icon, safeUrl, get
-    content.js          applies SITE_CONFIG to text, images, links, socials
-    gallery.js          builds filter buttons + project cards, filtering, featured band
-    services.js         builds service cards and skill rings
-    nav.js              sticky header, mobile menu, active-link highlight
-    whatsapp-inquiry.js builds wa.me links and handles the contact form
-    effects.js          reveal-on-scroll, cursor glow
-    main.js             entry point; calls the modules in order
-  assets/images/        original placeholder artwork (no real people or brands)
-docs/customisation.md   theme variables, adding projects/services, fonts
+server.py          entry point (python3 server.py): HTTP handler, routes, sessions, sign-in, uploads, DB init
+validation.py      portfolio_error() / config_error(): the only place content rules live
+uploads.py         image type by file signature, safe names, size limit
+Project/           static files served at /
+  index.html       the website; contains NO personal data (content comes from /config.js and /js/data.js)
+  config.js        static fallback config (used only when hosted without the server)
+  css/ base, layout, components, responsive    (load order in index.html)
+  js/  data.js (static fallback), utils, content, gallery, services, nav, whatsapp-inquiry, effects, main
+  admin/           admin panel: index.html, admin.css, core.js (helpers, API), editors.js (one editor per section), main.js
+  assets/images/   original placeholder artwork
+database/          schema.sql (creates everything from scratch, idempotent), seed.sql (demo rows), default-portfolio.json, default-config.json
+tests/             test_server.py (unittest: validation, auth, CSRF, uploads, throttling)
+docs/              customisation.md, api.md, screenshots
+Dockerfile, docker-compose.yml, .env.example
 ```
+Runtime content lives as JSON in the SQLite table `app_content` (keys `portfolio`, `config`); the server renders it at `/js/data.js` and `/config.js`. The relational tables are demo/reference data.
 
-CSS load order (see `<head>`): `base → layout → components → responsive`. Scripts are classic scripts loaded in the order at the bottom of `index.html` (**not ES modules**, so the page also works from `file://`); each file attaches to the shared `window.Portfolio` namespace.
+## Rules that must not be broken
+- Every route that creates, updates or deletes data calls `require_admin()` (session + admin role + `X-Portfolio-Action` header). Public POST routes: only `/api/login` and `/api/logout`.
+- SQL: bound parameters only. Never build SQL from request data.
+- New editable field: update `validation.py`, `database/default-*.json`, the editor in `Project/admin/editors.js`, the public use (`Project/js/content.js`, `data-bind="…"` in `index.html`), `Project/config.js` / `Project/js/data.js` fallbacks, docs and tests.
+- New table/column: edit `database/schema.sql` (idempotent) and add a guarded migration in `initialize()` for existing installs.
+- Never `innerHTML` with data (use `textContent` / `Admin.h()` / `Portfolio.el()`); external URLs go through `Portfolio.safeUrl()`.
+- No inline scripts or inline event handlers (CSP `script-src 'self'`; the one allowed inline snippet in `index.html` is pinned by hash in `server.py`: update the hash if you change it).
+- Never log or return password hashes or session tokens; never ship real credentials. Placeholders only: `+10000000000`, `hello@example.com`, `https://example.com/…`.
+- Accessibility is required: landmarks, labels, alt text, keyboard operation, visible focus, `prefers-reduced-motion`.
+- Keep files small; one file per feature. Media queries for the website go in `css/responsive.css`.
+- Update `CHANGELOG.md` for every user-visible change and keep the docs in sync.
 
-## Where things live
-- **Gallery data:** `Project/js/data.js` → `PortfolioData.projects` and `.categories`. Rendering and filtering: `js/gallery.js`.
-- **Services and skills data:** `js/data.js` → `.services`, `.skills`, `.otherSkills`. Rendering: `js/services.js`.
-- **WhatsApp logic:** `js/whatsapp-inquiry.js` (`link()` builds `https://wa.me/<digits>?text=<encodeURIComponent(message)>`; the number comes from `SITE_CONFIG.contact.whatsappNumber`).
-- **Owner name, e-mail, social links, texts:** `config.example.js`; applied by `js/content.js` through `data-bind="path.to.key"` attributes in `index.html`.
-- **Theme colours:** CSS variables in `:root` of `css/base.css`.
-
-## Conventions
-- Vanilla ES5-style JS in IIFEs, `'use strict'`, no globals except `SITE_CONFIG`, `PortfolioData`, `Portfolio`.
-- Build DOM with `Portfolio.el()` / `textContent`. **Never `innerHTML` with config or data values.** External URLs go through `Portfolio.safeUrl()` (http/https/mailto only).
-- Every external link: `target="_blank" rel="noopener noreferrer"`.
-- Never store or transmit visitor data. The contact flow may only open `wa.me` or `mailto:` links.
-- No real credentials, phone numbers, e-mails or private URLs anywhere. Placeholders only: `+10000000000`, `hello@example.com`, `https://example.com/...`.
-- Cards (projects, services, skills) are generated from data. Do not copy-paste card markup into `index.html`.
-- Accessibility is a requirement: semantic landmarks, `alt` on every image, keyboard-operable controls, visible focus, `aria-pressed` on filters, `prefers-reduced-motion` respected.
-- Keep CSS split by concern (above); put new media queries in `responsive.css`. Keep files small; add a new file per new feature rather than growing one.
-- Do not add a second config file.
-- When `js/data.js` changes, regenerate or update `database/seed.sql` so the two stay identical.
-- Update `CHANGELOG.md` for every user-visible change (Keep a Changelog format).
-
-## Preview
+## Commands
 ```bash
-cd Project
-python3 -m http.server 8080     # then open http://localhost:8080
+cp .env.example .env                          # set ADMIN_EMAIL, ADMIN_PASSWORD, SESSION_SECRET
+python3 server.py                             # http://127.0.0.1:8080  (admin: /admin/)
+python3 -m unittest discover -s tests -v      # must pass before every release
+docker compose up --build -d                  # Docker alternative
 ```
-Or just open `Project/index.html` in a browser. There are no tests to run. Manually check at 1440, 1024, 820, 560 and 390 px; test the gallery filters with the keyboard; click a WhatsApp button and confirm the `wa.me/…?text=…` URL.
+Manual check after UI changes: website at 1440, 1024, 820, 560 and 390 px; admin at 390 px and desktop; keyboard-only through the filter buttons, contact form and admin forms.

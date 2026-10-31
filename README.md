@@ -1,86 +1,82 @@
-# Responsive Creative Portfolio Website Template
+# Responsive Creative Portfolio CMS
 
-A polished, **responsive single-page portfolio template for designers and freelancers**. It showcases your work in a filterable project gallery, presents your services, tells your story, and turns visitors into clients through contact links and a **WhatsApp inquiry flow** that opens a chat with a prefilled message.
+A responsive single-page portfolio website for designers, freelancers and creative studios, **with a built-in admin panel**. Visitors see a polished portfolio (project gallery with category filters, services, about, skills, contact, WhatsApp inquiry). You sign in to `/admin/` to change everything without touching code: texts, photos, projects, categories, services, skills, contact details and social links.
 
-Built with **HTML5, CSS3 and vanilla JavaScript**. Frontend-only: no backend, no database, no build step, no npm packages, no CDN requests, no tracking. Customise a single config file, upload the folder, and you are live.
+Built with HTML5, CSS3 and vanilla JavaScript on the front end and a **Python standard-library server with SQLite** on the back end. **Zero third-party dependencies**: nothing to install with pip or npm, no build step, no CDN, no tracking.
 
-| Desktop | Mobile |
+| Website | Admin panel |
 |---|---|
-| ![Desktop screenshot of the hero section](docs/screenshots/desktop.png) | ![Mobile screenshot of the hero section](docs/screenshots/mobile.png) |
+| ![Website hero section](docs/screenshots/desktop.png) | ![Admin panel, projects editor](docs/screenshots/admin-panel.png) |
 
-![Desktop screenshot of the services and portfolio gallery](docs/screenshots/desktop-gallery.png)
+![Website services and gallery](docs/screenshots/desktop-gallery.png)
 
-**Live demo:** the public demo URL is shown on the marketplace listing where you bought this template.
+Mobile: ![Website on a phone](docs/screenshots/mobile.png) ![Admin panel on a phone](docs/screenshots/admin-panel-mobile.png)
 
----
+**Live demo:** the public demo URL and demo sign-in are shown on the marketplace listing where you bought this product.
 
 ## Who is it for?
-
-- Graphic designers, UI/UX designers, illustrators and brand designers
-- Freelancers and creative studios who need a fast, professional online portfolio
-- Developers who want a clean, well-structured static starter for a client's portfolio
+- Designers, UI/UX designers, illustrators and brand designers who want to update their own portfolio
+- Freelancers and studios that need a fast, private site they fully own
+- Developers who want a clean, dependency-free starter for a client's portfolio with a ready admin area
 
 ## Features
+**Public website** (`/`)
+- Hero, About, Services, Portfolio gallery with keyboard-operable category filters, Skills, Featured project and Contact
+- WhatsApp inquiry flow: buttons and the contact form open `wa.me` with a prefilled message; visitor data is never stored
+- Responsive from 320 px phones to wide desktops, mobile menu, skip link, alt text, visible focus, reduced-motion support
+- Every text, image, project, service and skill comes from the database
 
-- **Hero, About, Services, Portfolio, Skills, Featured project and Contact** sections in one page
-- **Project gallery with category filters**: keyboard-operable buttons, live "Showing N projects" status for screen readers
-- **Data-driven content**: gallery cards, filters, service cards and skill rings are generated from `js/data.js`; add a project by adding one object
-- **WhatsApp inquiry flow**: every WhatsApp button and the contact form open `wa.me` with a prefilled, URL-encoded message; nothing is stored or sent to a server
-- **One config file** (`config.example.js`) for your name, initials, role, WhatsApp number, e-mail, social links and footer text
-- **Responsive** from 320 px phones to wide desktops, with a mobile navigation menu
-- **Accessible**: semantic landmarks, skip link, labelled sections, alt text on every image, visible focus, reduced-motion support
-- **Fast and private**: no frameworks, no third-party requests, works offline from `file://`
-- **Clean structure**: CSS split into `base`, `layout`, `components`, `responsive`; JS split by feature
-- **Themeable** through CSS variables
-- **Docker-ready**: `docker compose up -d` serves the site with nginx (`docker-compose.yml`)
-- **Strict-CSP friendly** (an nginx example with a Content-Security-Policy is in `HowToSetup.md`)
+**Admin panel** (`/admin/`)
+- Secure sign-in (PBKDF2 password hashing, signed `HttpOnly` session cookie, sign-in throttling), sign-out and password change
+- Edit the site profile: name, role, texts, photos, contact details, social links, page texts
+- Projects: add, edit, reorder, delete, choose the featured project, upload images (JPG, PNG, WebP, GIF up to 3 MB)
+- Categories, services, skills and tags with full add / edit / reorder / delete
+- Changes are validated on the server and go live as soon as you press **Save changes**
 
-## Quick start
+**Deployment**: run with `python3 server.py` on a VPS, or `docker compose up --build -d`. Guide: [HowToSetup.md](HowToSetup.md).
 
-1. Unzip the package.
-2. Open `Project/index.html` in your browser (or run `python3 -m http.server 8080` inside `Project/`).
-3. Edit `Project/config.example.js` with your details and `Project/js/data.js` with your projects.
-4. Upload the `Project/` folder to Netlify, GitHub Pages or your own server, or run `docker compose up -d` from the ZIP root.
+## Quick start (3 minutes)
+Requires Python 3.10 or newer (`python3 --version`).
 
-Full instructions, including nginx on a VPS: **[HowToSetup.md](HowToSetup.md)**.
+```bash
+cp .env.example .env      # then set ADMIN_EMAIL, ADMIN_PASSWORD (14+ characters) and SESSION_SECRET in .env
+python3 server.py
+```
+
+Open http://127.0.0.1:8080 for the website and http://127.0.0.1:8080/admin/ to sign in. After the first start, delete the `ADMIN_PASSWORD` line from `.env`. Generate the secret with `python3 -c "import secrets; print(secrets.token_hex(32))"`.
 
 ## What is in the package
-
 ```text
-README.md                 this file
-HowToSetup.md             local preview, Netlify, GitHub Pages, VPS/nginx, Docker, database note, branding, WhatsApp, images
-CLAUDE.md                 guide for AI coding tools
-CHANGELOG.md              version history (1.0.0)
-LICENSE-NOTE.md           template licence + rights and sources of every bundled asset
-.env.example             every setting with a placeholder (reference only; not read at runtime)
-docker-compose.yml        nginx container serving Project/
-database/                 optional schema.sql + seed.sql (mirror of js/data.js; not used by the site)
-Project/
-├── index.html
-├── config.example.js     the only configuration file (placeholders)
-├── css/                  base.css · layout.css · components.css · responsive.css
-├── js/                   data.js · utils.js · content.js · gallery.js · services.js ·
-│                         nav.js · whatsapp-inquiry.js · effects.js · main.js
-└── assets/images/        original placeholder artwork
-docs/
-├── customisation.md      theme colours, adding projects and services, fonts
-└── screenshots/          images used in this README
+server.py            HTTP server, API routes, sign-in, sessions, uploads (Python standard library)
+validation.py        validation of portfolio data and site configuration
+uploads.py           image type detection and safe file names
+Project/             the website (index.html, css/, js/, assets/) and the admin panel (admin/)
+database/            schema.sql (creates the database from scratch), seed.sql (demo records), default-*.json (initial content)
+tests/               automated tests            ->  python3 -m unittest discover -s tests -v
+docs/                customisation guide, API reference, screenshots
+Dockerfile, docker-compose.yml, .env.example
+README.md, HowToSetup.md, CLAUDE.md, CHANGELOG.md, LICENSE-NOTE.md
 ```
 
 ## Security model
+- Every route that creates, updates or deletes data requires a signed-in administrator, the admin role and the `X-Portfolio-Action` header (anti-CSRF); anonymous requests get 401/403. Test-covered.
+- Passwords are stored as salted PBKDF2-HMAC-SHA256 hashes; sessions expire after 8 hours; 8 failed sign-ins per 5 minutes per address are throttled.
+- All SQL uses bound parameters. Uploads are accepted only as real JPG/PNG/WebP/GIF files (checked by file signature), size-limited, stored under random names.
+- Strict Content-Security-Policy, `nosniff`, frame and referrer headers. Data is rendered with `textContent`, never `innerHTML`.
+- No default password ships. The first administrator is created from your own `.env`.
+- This is a small single-admin CMS. Use HTTPS (`COOKIE_SECURE=true`) in production, back up the `data/` folder, and add proxy-level rate limiting for busy public sites.
 
-The template has no server code, no database connection, no sign-in and no endpoint that creates, updates or deletes data, so there is nothing to authenticate or role-protect. The contact form only opens a `wa.me` or `mailto:` link in the visitor's own browser. `.env.example` holds placeholders only; never commit a real `.env`.
+## Tests
+```bash
+python3 -m unittest discover -s tests -v
+```
+Covers validation rules, password hashing, sign-in and throttling, anonymous write denial, CSRF header, uploads and content saving.
 
 ## Browser support
-
-Current versions of Chrome, Edge, Firefox and Safari (desktop and mobile).
+Current Chrome, Edge, Firefox and Safari (desktop and mobile).
 
 ## Placeholders and privacy
-
-All names, numbers, e-mail addresses and links shipped in the template are placeholders (`+10000000000`, `hello@example.com`, `https://example.com/...`). The template contains no analytics, API keys or private URLs, and it does not collect visitor data.
+Names, phone numbers, e-mails and links in the demo content are placeholders (`+10000000000`, `hello@example.com`, `https://example.com/...`). Replace them in the admin panel.
 
 ## Licence
-
-Sold under the **Standard Licence** (one end product per licence). You may modify the template and use it for one website; you may not resell or redistribute the template itself. All bundled images are original artwork; no third-party fonts or libraries are bundled. Read the full terms and the asset-rights table in **[LICENSE-NOTE.md](LICENSE-NOTE.md)**.
-
-© 2026 Ride Bangla Limited.
+Standard Licence by Ride Bangla Limited; see [LICENSE-NOTE.md](LICENSE-NOTE.md) for the terms and the list of bundled assets.

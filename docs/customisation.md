@@ -93,3 +93,10 @@ No font files are bundled. By default the template uses the first installed font
 ## 7. Change the contact flow
 
 All WhatsApp behaviour is in `js/whatsapp-inquiry.js`. To change the message format, edit `formMessage()`. To remove the form entirely, delete the `<form id="contactForm">` block; the WhatsApp and e-mail rows keep working.
+
+
+## 8. Using the admin panel (server deployments)
+
+Open `/admin/` and sign in. Tabs: **Site profile** (name, role, texts, photos, contact, social links, page texts), **Projects** (add, edit, reorder, delete, choose the featured project, upload images), **Categories**, **Services**, **Skills** and **Password**. Press **Save changes** to publish. Uploaded images are stored next to the database (`data/uploads/`) and are available as `assets/images/<file>`.
+
+The files `Project/config.js` and `Project/js/data.js` are only a static fallback (used when the site is hosted without the server, for example on GitHub Pages). On a server deployment the database content is used instead.
