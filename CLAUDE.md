@@ -3,61 +3,56 @@
 Guidance for AI coding tools (Claude Code, Copilot, Cursor, etc.) working on this repository.
 
 ## What this is
-A frontend-only, responsive creative portfolio template (HTML5 + CSS3 + vanilla JS). **No backend, no database, no build step, no npm, no tests.** Keep it that way: do not add frameworks, bundlers, packages, CDN links, analytics or a real `.env`. `.env.example` is a documentation-only list of the `config.example.js` settings (placeholders only); keep it in sync when a config key changes.
+**Creative Portfolio CMS**: a portfolio website plus admin panel. Backend = plain Node.js (`node:http`, `node:sqlite`, `node:crypto`), frontend = vanilla HTML/CSS/JS. **No third-party dependencies, no build step, no CDN, no frameworks.** Keep it that way: do not add npm packages, bundlers, CDN links or analytics. Requires Node >= 22.13.
 
 ## Folder layout
 ```text
-README.md · HowToSetup.md · CLAUDE.md · CHANGELOG.md · LICENSE-NOTE.md
-.env.example            placeholder list of every config value (not read at runtime)
-docker-compose.yml      nginx container serving Project/ (no build step)
-database/               optional schema.sql + seed.sql mirroring js/data.js (the site does not use them)
-Project/
-  index.html            semantic sections + inline SVG icon sprite; contains NO real data
-  config.example.js     the ONLY config file (window.SITE_CONFIG): owner, images, contact, social, site text
-  css/
-    base.css            :root theme variables, reset, helpers (.sr-only, .skip-link), reveal effects
-    layout.css          header, hero, section frames, grids, footer
-    components.css      buttons, cards, slots, forms, rings, chips, banners, service cards
-    responsive.css      all media queries (1024 / 820 / 560 / 380, hover, reduced motion)
-  js/
-    data.js             PortfolioData: categories, projects, featuredProjectId, services, skills
-    utils.js            window.Portfolio helpers: $, $$, el, icon, safeUrl, get
-    content.js          applies SITE_CONFIG to text, images, links, socials
-    gallery.js          builds filter buttons + project cards, filtering, featured band
-    services.js         builds service cards and skill rings
-    nav.js              sticky header, mobile menu, active-link highlight
-    whatsapp-inquiry.js builds wa.me links and handles the contact form
-    effects.js          reveal-on-scroll, cursor glow
-    main.js             entry point; calls the modules in order
-  assets/images/        original placeholder artwork (no real people or brands)
-docs/customisation.md   theme variables, adding projects/services, fonts
+server/
+  index.js            entry point (npm start)
+  app.js              builds the HTTP server: security headers, Origin/CSRF/auth/role checks, rate limits, routing
+  config.js           reads .env + process.env
+  db.js               opens SQLite, applies database/schema.sql, seeds database/seed.sql on an empty DB; bound-parameter helpers
+  auth.js             scrypt passwords, hashed session tokens, CSRF token, cookie header
+  http.js             Router (every route declares access: public | staff | admin), body readers, CSP, limiter
+  validate.js         schema validator (unknown fields dropped), HttpError, slugify
+  settings-schema.js  whitelist + rules for editable site settings (key -> rule)
+  uploads.js          image upload by magic bytes (JPG/PNG/WebP/GIF only), orphan clean-up
+  static.js           static file server (path traversal + dot-file safe)
+  routes/public.js    GET /api/public, POST /api/contact, POST /api/auth/login, GET /api/health
+  routes/admin.js     session, password, stats, inbox, upload, settings, users
+  routes/content.js   categories, projects, services, skills, other skills (uses routes/crud.js)
+  routes/crud.js      generic list/get/create/update/delete for a content table
+  scripts/create-admin.js   create admin / reset a password
+database/schema.sql   SINGLE source of truth for the data model (idempotent, applied on every start)
+database/seed.sql     placeholder sample content (INSERT OR IGNORE, applied once to an empty DB)
+Project/              static files served at /
+  index.html          the website; contains NO data (all content comes from /api/public)
+  css/ base, layout, components, responsive   (load order: base -> layout -> components -> responsive)
+  js/ boot, utils, api, content, gallery, services, nav, contact, effects, main   (classic scripts, order in index.html)
+  admin/              admin panel: index.html, admin.css, js/ core, resources, views, main
+  assets/images/      original placeholder artwork
+test/api.test.js      npm test (node:test): auth, roles, CSRF, validation, uploads, rate limit, traversal
+docs/                 customisation.md, api.md, screenshots
 ```
 
-CSS load order (see `<head>`): `base → layout → components → responsive`. Scripts are classic scripts loaded in the order at the bottom of `index.html` (**not ES modules**, so the page also works from `file://`); each file attaches to the shared `window.Portfolio` namespace.
+## Rules that must not be broken
+- **Every route is registered with an explicit access level** (`public`, `staff`, `admin`). The only public non-GET routes are `POST /api/contact` and `POST /api/auth/login`; `test/api.test.js` fails if another appears or if any guarded route answers an anonymous request with anything but 401.
+- Every non-GET request from a signed-in user needs the `X-CSRF-Token` header; cross-origin writes are refused by the Origin check. Do not weaken this.
+- SQL: **bound parameters only**. Table/column names may come only from constants in code (see `routes/crud.js`), never from a request.
+- New editable setting: add it to `server/settings-schema.js`, `database/seed.sql`, the admin form in `Project/admin/js/views.js` (SECTIONS), the public use in `Project/js/content.js` / `index.html` (`data-bind="group.key"`), and `.env.example`/docs if relevant.
+- New table/column: edit `database/schema.sql` (idempotent: `IF NOT EXISTS`; for new columns on existing installs add a guarded migration step in `server/db.js`), keep foreign keys, indexes on FK columns and explicit `ON DELETE` rules.
+- Never `innerHTML` with data; use `textContent` / `Portfolio.el()` / `Admin.h()`. External URLs from data go through `Portfolio.safeUrl()`.
+- No inline `<script>` or event-handler attributes (the CSP is `script-src 'self'`). Put code in a file.
+- Never log or return password hashes or session tokens. Never ship real credentials, phone numbers or e-mails; placeholders only (`+10000000000`, `hello@example.com`, `https://example.com/...`).
+- Accessibility is a requirement: landmarks, `alt` text, labels for inputs, keyboard operation, visible focus, `prefers-reduced-motion`.
+- Keep CSS split by concern; media queries for the website go in `responsive.css`. Keep files small; add a file per new feature.
+- Update `CHANGELOG.md` (Keep a Changelog) for every user-visible change and keep the docs in sync.
 
-## Where things live
-- **Gallery data:** `Project/js/data.js` → `PortfolioData.projects` and `.categories`. Rendering and filtering: `js/gallery.js`.
-- **Services and skills data:** `js/data.js` → `.services`, `.skills`, `.otherSkills`. Rendering: `js/services.js`.
-- **WhatsApp logic:** `js/whatsapp-inquiry.js` (`link()` builds `https://wa.me/<digits>?text=<encodeURIComponent(message)>`; the number comes from `SITE_CONFIG.contact.whatsappNumber`).
-- **Owner name, e-mail, social links, texts:** `config.example.js`; applied by `js/content.js` through `data-bind="path.to.key"` attributes in `index.html`.
-- **Theme colours:** CSS variables in `:root` of `css/base.css`.
-
-## Conventions
-- Vanilla ES5-style JS in IIFEs, `'use strict'`, no globals except `SITE_CONFIG`, `PortfolioData`, `Portfolio`.
-- Build DOM with `Portfolio.el()` / `textContent`. **Never `innerHTML` with config or data values.** External URLs go through `Portfolio.safeUrl()` (http/https/mailto only).
-- Every external link: `target="_blank" rel="noopener noreferrer"`.
-- Never store or transmit visitor data. The contact flow may only open `wa.me` or `mailto:` links.
-- No real credentials, phone numbers, e-mails or private URLs anywhere. Placeholders only: `+10000000000`, `hello@example.com`, `https://example.com/...`.
-- Cards (projects, services, skills) are generated from data. Do not copy-paste card markup into `index.html`.
-- Accessibility is a requirement: semantic landmarks, `alt` on every image, keyboard-operable controls, visible focus, `aria-pressed` on filters, `prefers-reduced-motion` respected.
-- Keep CSS split by concern (above); put new media queries in `responsive.css`. Keep files small; add a new file per new feature rather than growing one.
-- Do not add a second config file.
-- When `js/data.js` changes, regenerate or update `database/seed.sql` so the two stay identical.
-- Update `CHANGELOG.md` for every user-visible change (Keep a Changelog format).
-
-## Preview
+## Commands
 ```bash
-cd Project
-python3 -m http.server 8080     # then open http://localhost:8080
+cp .env.example .env     # set ADMIN_EMAIL / ADMIN_PASSWORD once
+npm start                # http://localhost:3000  (admin: /admin/)
+npm test                 # must pass before every release
+npm run create-admin     # create an admin or reset a password
 ```
-Or just open `Project/index.html` in a browser. There are no tests to run. Manually check at 1440, 1024, 820, 560 and 390 px; test the gallery filters with the keyboard; click a WhatsApp button and confirm the `wa.me/…?text=…` URL.
+Manual check after UI changes: website at 1440, 1024, 820, 560 and 390 px; admin panel at 390 px and desktop; keyboard-only through the filter buttons, contact form and admin dialogs.

@@ -1,0 +1,13 @@
+{
+  "name": "creative-portfolio-cms",
+  "version": "2.0.0",
+  "description": "Creative portfolio website with an admin panel: projects, services, skills, site settings, contact inbox and user roles. No third-party dependencies.",
+  "private": true,
+  "license": "SEE LICENSE IN LICENSE-NOTE.md",
+  "engines": { "node": ">=22.13.0" },
+  "scripts": {
+    "start": "node --disable-warning=ExperimentalWarning server/index.js",
+    "create-admin": "node --disable-warning=ExperimentalWarning server/scripts/create-admin.js",
+    "test": "node --disable-warning=ExperimentalWarning --test test/*.test.js"
+  }
+}
