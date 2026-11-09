@@ -7,6 +7,7 @@ Guidance for AI coding tools (Claude Code, Copilot, Cursor, etc.) working on thi
 
 ## Architecture and folder map
 ```text
+demo_defaults.py   public demo sign-in, used only with DEMO_MODE=true
 server.py          entry point (python3 server.py): HTTP handler, routes, sessions, sign-in, uploads, DB init
 validation.py      portfolio_error() / config_error(): the only place content rules live
 uploads.py         image type by file signature, safe names, size limit
@@ -32,7 +33,7 @@ Runtime content lives as JSON in the SQLite table `app_content` (keys `portfolio
 - New table/column: edit `database/schema.sql` (idempotent) and add a guarded migration in `initialize()` for existing installs.
 - Never `innerHTML` with data (use `textContent` / `Admin.h()` / `Portfolio.el()`); external URLs go through `Portfolio.safeUrl()`.
 - No inline scripts or inline event handlers (CSP `script-src 'self'`; the one allowed inline snippet in `index.html` is pinned by hash in `server.py`: update the hash if you change it).
-- Never log or return password hashes or session tokens; never ship real credentials. Placeholders only: `+10000000000`, `hello@example.com`, `https://example.com/…`.
+- Never log or return password hashes or session tokens; never ship real credentials. Placeholders only: `+10000000000`, `hello@example.com`, `https://example.com/…`. The only exception is the public demo sign-in in `demo_defaults.py`, used solely when `DEMO_MODE=true`; never use it elsewhere.
 - Accessibility is required: landmarks, labels, alt text, keyboard operation, visible focus, `prefers-reduced-motion`.
 - Keep files small; one file per feature. Media queries for the website go in `css/responsive.css`.
 - Update `CHANGELOG.md` for every user-visible change and keep the docs in sync.

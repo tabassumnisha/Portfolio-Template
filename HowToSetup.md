@@ -78,12 +78,9 @@ Everything is editable in `/admin/`: the **Site profile** tab holds your name, i
 The package includes `api/index.py` and `vercel.json`, so the whole site (website, admin panel and API) runs on Vercel's free plan with no build step.
 1. Push the project to a GitHub repository (never commit `.env`).
 2. In Vercel choose **Add New → Project**, import the repository and keep the defaults (Framework preset **Other**, no build command, no output directory).
-3. Before the first deploy open **Settings → Environment Variables** and add:
-   - `ADMIN_EMAIL`: the demo admin e-mail
-   - `ADMIN_PASSWORD`: a **non-sensitive** demo password, 14+ characters (never reuse a real one)
-   - `SESSION_SECRET`: `python3 -c "import secrets; print(secrets.token_hex(32))"`
-   - `DEMO_MODE=true`: stops visitors from changing the demo password
-4. Deploy. Open `https://YOUR-PROJECT.vercel.app/` and `/admin/`, sign in with the demo account, change one text, save and reload the public site.
+3. Before the first deploy open **Settings → Environment Variables** and add one variable: `DEMO_MODE=true`. This switches on the built-in **public demo sign-in** (`demo@example.com` / `Demo-Admin-2026!`, defined in `demo_defaults.py`) and stops visitors from changing the demo password. To use your own demo account instead, also set `ADMIN_EMAIL`, `ADMIN_PASSWORD` (14+ characters, never a real password) and `SESSION_SECRET` (`python3 -c "import secrets; print(secrets.token_hex(32))"`); they override the built-in values.
+   **Never use `DEMO_MODE` on a real site**: its sign-in is public.
+4. Deploy. Open `https://YOUR-PROJECT.vercel.app/` and `/admin/`, sign in with the demo account (`demo@example.com` / `Demo-Admin-2026!` unless you set your own), change one text, save and reload the public site.
 
 Important to know about Vercel:
 - Vercel has no persistent disk. The demo database lives in `/tmp` and is rebuilt from `database/` and your environment variables on a cold start, so **edits and uploads made in the demo are temporary** and may disappear. That is intended for a demo that always returns to a clean state.

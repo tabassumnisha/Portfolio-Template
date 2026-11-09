@@ -47,6 +47,7 @@ Open http://127.0.0.1:8080 for the website and http://127.0.0.1:8080/admin/ to s
 
 ## What is in the package
 ```text
+demo_defaults.py     public demo sign-in (only used when DEMO_MODE=true)
 server.py            HTTP server, API routes, sign-in, sessions, uploads (Python standard library)
 validation.py        validation of portfolio data and site configuration
 uploads.py           image type detection and safe file names

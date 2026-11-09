@@ -11,6 +11,7 @@ from pathlib import Path
 import os, json, sqlite3, hashlib, hmac, secrets, time, base64, urllib.parse
 
 import uploads
+import demo_defaults
 from validation import portfolio_error, config_error, valid_portfolio, valid_config  # noqa: F401 (re-exported for tests)
 
 ROOT = Path(__file__).resolve().parent
@@ -100,6 +101,12 @@ def initialize():
     COOKIE_SECURE = os.getenv("COOKIE_SECURE", "true" if on_vercel else "false").lower() == "true"
     STATELESS_SESSIONS = os.getenv("STATELESS_SESSIONS", "true" if on_vercel else "false").lower() == "true"
     DEMO_MODE = os.getenv("DEMO_MODE", "false").lower() == "true"
+    if DEMO_MODE:   # public demo: fall back to the built-in demo sign-in for anything not configured explicitly
+        if not ADMIN_EMAIL or not ADMIN_PASSWORD or ADMIN_PASSWORD.startswith("CHANGE_ME"):
+            ADMIN_EMAIL, ADMIN_PASSWORD = demo_defaults.EMAIL, demo_defaults.PASSWORD
+        if not session_secret_ready():
+            SESSION_SECRET = demo_defaults.SESSION_SECRET
+        print("DEMO_MODE is on: this is a public demo. Do not use it for a real site.")
     con = connect()
     con.executescript((ROOT / "database/schema.sql").read_text(encoding="utf-8"))
     if con.execute("SELECT COUNT(*) n FROM projects").fetchone()["n"] == 0:

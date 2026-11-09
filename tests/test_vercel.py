@@ -119,12 +119,71 @@ class VercelHandlerTests(unittest.TestCase):
             self.assertEqual(self.call(method, path, {})[0], 401, method + " " + path)
 
 
+class DemoDefaultsTests(unittest.TestCase):
+    """DEMO_MODE=true alone (no ADMIN_* or SESSION_SECRET set) gives a working public-demo sign-in; without it nothing is created."""
+
+    def setUp(self):
+        self.saved = {k: os.environ.get(k) for k in SETTINGS}
+        self.tmp = tempfile.TemporaryDirectory()
+        for k in ("ADMIN_EMAIL", "ADMIN_PASSWORD", "SESSION_SECRET", "VERCEL", "STATELESS_SESSIONS"):
+            os.environ.pop(k, None)
+        os.environ.update(DATABASE_PATH=str(Path(self.tmp.name) / "d.sqlite3"), COOKIE_SECURE="false")
+
+    def tearDown(self):
+        for k, v in self.saved.items():
+            if v is None: os.environ.pop(k, None)
+            else: os.environ[k] = v
+        server.initialize.__globals__.update(STATELESS_SESSIONS=False, DEMO_MODE=False)
+        self.tmp.cleanup()
+
+    def request(self, httpd, method, path, body=None, cookie=None):
+        conn = http.client.HTTPConnection("127.0.0.1", httpd.server_address[1], timeout=10)
+        headers = {"X-Portfolio-Action": "1"}
+        if cookie: headers["Cookie"] = cookie
+        conn.request(method, path, body=json.dumps(body).encode() if body is not None else None, headers=headers)
+        r = conn.getresponse(); payload = json.loads(r.read() or b"{}"); cookie = r.getheader("Set-Cookie"); conn.close()
+        return r.status, payload, (cookie.split(";")[0] if cookie else None)
+
+    def test_demo_mode_alone_enables_the_demo_login(self):
+        import demo_defaults
+        os.environ["DEMO_MODE"] = "true"
+        server.initialize()
+        server.Handler.log_message = lambda *args: None
+        httpd = ThreadingHTTPServer(("127.0.0.1", 0), server.Handler)
+        threading.Thread(target=httpd.serve_forever, daemon=True).start()
+        try:
+            server.LOGIN_FAILURES.clear()
+            self.assertEqual(self.request(httpd, "POST", "/api/login", {"email": demo_defaults.EMAIL, "password": "wrong-password-123"})[0], 401)
+            status, _, cookie = self.request(httpd, "POST", "/api/login", {"email": demo_defaults.EMAIL, "password": demo_defaults.PASSWORD})
+            self.assertEqual(status, 200)
+            self.assertEqual(self.request(httpd, "GET", "/api/admin/session", cookie=cookie)[1], {"signedIn": True})
+            self.assertEqual(self.request(httpd, "POST", "/api/admin/password", {"currentPassword": demo_defaults.PASSWORD, "newPassword": "x" * 20}, cookie)[0], 403)
+        finally:
+            httpd.shutdown(); httpd.server_close()
+
+    def test_nothing_is_created_without_demo_mode(self):
+        import sqlite3
+        os.environ["DEMO_MODE"] = "false"
+        server.initialize()
+        self.assertEqual(server.ADMIN_PASSWORD, "")
+        self.assertFalse(server.session_secret_ready())
+        con = sqlite3.connect(os.environ["DATABASE_PATH"])
+        self.assertEqual(con.execute("SELECT COUNT(*) FROM admin_users").fetchone()[0], 0)
+        con.close()
+
+    def test_placeholder_values_do_not_block_demo_defaults(self):
+        os.environ.update(DEMO_MODE="true", ADMIN_PASSWORD="CHANGE_ME_USE_A_UNIQUE_LONG_PASSWORD", SESSION_SECRET="CHANGE_ME_GENERATE_AT_LEAST_32_RANDOM_BYTES")
+        server.initialize()
+        self.assertTrue(server.session_secret_ready())
+        self.assertFalse(server.ADMIN_PASSWORD.startswith("CHANGE_ME"))
+
+
 class VercelConfigTests(unittest.TestCase):
     def test_vercel_json_routes_everything_to_the_function(self):
         cfg = json.loads((ROOT / "vercel.json").read_text(encoding="utf-8"))
         self.assertEqual(cfg["rewrites"], [{"source": "/(.*)", "destination": "/api/index?__p=/$1"}])
         include = cfg["functions"]["api/index.py"]["includeFiles"]
-        for needed in ("server.py", "validation.py", "uploads.py", "Project/**", "database/**"):
+        for needed in ("server.py", "validation.py", "uploads.py", "demo_defaults.py", "Project/**", "database/**"):
             self.assertIn(needed, include)
 
 
