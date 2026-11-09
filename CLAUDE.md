@@ -18,9 +18,10 @@ Project/           static files served at /
   admin/           admin panel: index.html, admin.css, core.js (helpers, API), editors.js (one editor per section), main.js
   assets/images/   original placeholder artwork
 database/          schema.sql (creates everything from scratch, idempotent), seed.sql (demo rows), default-portfolio.json, default-config.json
-tests/             test_server.py (unittest: validation, auth, CSRF, uploads, throttling)
+tests/             test_server.py, test_vercel.py (unittest: validation, auth, CSRF, uploads, throttling, Vercel handler)
 docs/              customisation.md, api.md, screenshots
-Dockerfile, docker-compose.yml, .env.example
+api/index.py       Vercel entry: restores the original path from ?__p= and reuses server.Handler (vercel.json rewrites everything to it)
+Dockerfile, docker-compose.yml, .env.example, vercel.json
 ```
 Runtime content lives as JSON in the SQLite table `app_content` (keys `portfolio`, `config`); the server renders it at `/js/data.js` and `/config.js`. The relational tables are demo/reference data.
 
@@ -35,6 +36,8 @@ Runtime content lives as JSON in the SQLite table `app_content` (keys `portfolio
 - Accessibility is required: landmarks, labels, alt text, keyboard operation, visible focus, `prefers-reduced-motion`.
 - Keep files small; one file per feature. Media queries for the website go in `css/responsive.css`.
 - Update `CHANGELOG.md` for every user-visible change and keep the docs in sync.
+
+- On Vercel (`VERCEL` set) the database lives in `/tmp` and sessions are stateless signed cookies (`STATELESS_SESSIONS`); keep both code paths working and tested (`tests/test_vercel.py`).
 
 ## Commands
 ```bash

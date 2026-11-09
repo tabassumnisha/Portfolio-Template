@@ -8,7 +8,7 @@ Every route that changes data requires a signed-in admin and the X-Portfolio-Act
 """
 from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
 from pathlib import Path
-import os, json, sqlite3, hashlib, hmac, secrets, time, urllib.parse
+import os, json, sqlite3, hashlib, hmac, secrets, time, base64, urllib.parse
 
 import uploads
 from validation import portfolio_error, config_error, valid_portfolio, valid_config  # noqa: F401 (re-exported for tests)
@@ -23,6 +23,8 @@ ADMIN_EMAIL = ""
 ADMIN_PASSWORD = ""
 SESSION_SECRET = ""
 COOKIE_SECURE = False
+STATELESS_SESSIONS = False   # True on serverless hosts (Vercel): the session lives in the signed cookie, not in memory
+DEMO_MODE = False            # True for a public demo: the admin password cannot be changed
 SESSION_TTL = 8 * 60 * 60
 SESSIONS = {}
 LOGIN_FAILURES = {}
@@ -86,14 +88,18 @@ def session_secret_ready():
 def initialize():
     """Read settings, create the database from scratch if needed, seed demo content, create the first admin."""
     read_env_file()
-    global HOST, PORT, DB_PATH, ADMIN_EMAIL, ADMIN_PASSWORD, SESSION_SECRET, COOKIE_SECURE
+    global HOST, PORT, DB_PATH, ADMIN_EMAIL, ADMIN_PASSWORD, SESSION_SECRET, COOKIE_SECURE, STATELESS_SESSIONS, DEMO_MODE
+    on_vercel = bool(os.getenv("VERCEL"))
     HOST = os.getenv("HOST", HOST); PORT = int(os.getenv("PORT", str(PORT)))
-    DB_PATH = Path(os.getenv("DATABASE_PATH", str(DB_PATH)))
+    # On Vercel only /tmp is writable, so the database defaults there (it is rebuilt on every cold start).
+    DB_PATH = Path(os.getenv("DATABASE_PATH", "/tmp/portfolio-cms/portfolio.sqlite3" if on_vercel else str(DB_PATH)))
     if not DB_PATH.is_absolute(): DB_PATH = (ROOT / DB_PATH).resolve()
     ADMIN_EMAIL = os.getenv("ADMIN_EMAIL", "").strip().lower()
     ADMIN_PASSWORD = os.getenv("ADMIN_PASSWORD", "")
     SESSION_SECRET = os.getenv("SESSION_SECRET", "")
-    COOKIE_SECURE = os.getenv("COOKIE_SECURE", "false").lower() == "true"
+    COOKIE_SECURE = os.getenv("COOKIE_SECURE", "true" if on_vercel else "false").lower() == "true"
+    STATELESS_SESSIONS = os.getenv("STATELESS_SESSIONS", "true" if on_vercel else "false").lower() == "true"
+    DEMO_MODE = os.getenv("DEMO_MODE", "false").lower() == "true"
     con = connect()
     con.executescript((ROOT / "database/schema.sql").read_text(encoding="utf-8"))
     if con.execute("SELECT COUNT(*) n FROM projects").fetchone()["n"] == 0:
@@ -136,7 +142,7 @@ def list_images():
 
 
 class Handler(SimpleHTTPRequestHandler):
-    server_version = "PortfolioCMS/1.2"
+    server_version = "PortfolioCMS/1.3"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=str(PROJECT), **kwargs)
@@ -175,6 +181,16 @@ class Handler(SimpleHTTPRequestHandler):
         if n < 0 or n > limit: raise ValueError("Request body too large")
         return n
 
+    def discard_body(self, limit=16 * 1024 * 1024):
+        """Read and drop a rejected request body (bounded) so the client receives our error instead of a broken connection."""
+        try: left = min(int(self.headers.get("Content-Length", "0")), limit)
+        except ValueError: left = 0
+        while left > 0:
+            chunk = self.rfile.read(min(65536, left))
+            if not chunk: break
+            left -= len(chunk)
+        self.close_connection = True
+
     def body(self):
         try:
             parsed = json.loads(self.rfile.read(self.body_length(1_000_000)) or b"{}")
@@ -201,6 +217,13 @@ class Handler(SimpleHTTPRequestHandler):
         if not value or not session_secret_ready(): return None
         sid, sep, sig = value.partition(".")
         if not sep or not hmac.compare_digest(sig, hmac.new(SESSION_SECRET.encode(), sid.encode(), hashlib.sha256).hexdigest()): return None
+        if STATELESS_SESSIONS and sid.startswith("v1_"):
+            try:
+                claims = json.loads(base64.urlsafe_b64decode(sid[3:] + "=" * (-len(sid[3:]) % 4)))
+                session = {"user_id": int(claims["u"]), "expires": float(claims["e"])}
+            except (ValueError, KeyError, TypeError):
+                return None
+            return session if session["expires"] >= time.time() else None
         session = SESSIONS.get(sid)
         if not session or session["expires"] < time.time():
             SESSIONS.pop(sid, None); return None
@@ -286,7 +309,11 @@ class Handler(SimpleHTTPRequestHandler):
             LOGIN_FAILURES.setdefault(self.client_address[0], []).append(time.time())
             time.sleep(.25); self.send_json(401, {"error": "Invalid email or password."}); return
         LOGIN_FAILURES.pop(self.client_address[0], None)
-        sid = secrets.token_urlsafe(32); SESSIONS[sid] = {"user_id": user["id"], "expires": time.time() + SESSION_TTL}
+        if STATELESS_SESSIONS:
+            claims = json.dumps({"u": user["id"], "e": int(time.time() + SESSION_TTL)}, separators=(",", ":")).encode()
+            sid = "v1_" + base64.urlsafe_b64encode(claims).decode().rstrip("=")
+        else:
+            sid = secrets.token_urlsafe(32); SESSIONS[sid] = {"user_id": user["id"], "expires": time.time() + SESSION_TTL}
         sig = hmac.new(SESSION_SECRET.encode(), sid.encode(), hashlib.sha256).hexdigest()
         cookie = "portfolio_session=%s.%s; Path=/; HttpOnly; SameSite=Strict; Max-Age=%d" % (sid, sig, SESSION_TTL)
         if COOKIE_SECURE: cookie += "; Secure"
@@ -295,6 +322,7 @@ class Handler(SimpleHTTPRequestHandler):
     def handle_password(self, data):
         user = self.require_admin()
         if not user: return
+        if DEMO_MODE: self.send_json(403, {"error": "The password cannot be changed in the public demo."}); return
         current = str(data.get("currentPassword", "")); new = str(data.get("newPassword", ""))
         if len(new) < 14: self.send_json(400, {"error": "New password must be at least 14 characters."}); return
         con = connect(); row = con.execute("SELECT password_hash FROM admin_users WHERE id=?", (user["id"],)).fetchone()
@@ -306,7 +334,8 @@ class Handler(SimpleHTTPRequestHandler):
     def handle_upload(self):
         if not self.require_admin(): return
         try: raw = self.rfile.read(self.body_length(uploads.MAX_UPLOAD_BYTES))
-        except ValueError: self.send_json(413, {"error": "Image is larger than 3 MB."}); return
+        except ValueError:
+            self.discard_body(); self.send_json(413, {"error": "Image is larger than 3 MB."}); return
         extension = uploads.detect_extension(raw)
         if not extension: self.send_json(400, {"error": "Only JPG, PNG, WebP or GIF images are accepted."}); return
         name = uploads.new_name(extension)

@@ -23,7 +23,7 @@ CREATE TABLE IF NOT EXISTS projects (
   image_file   VARCHAR(255) NOT NULL,              -- file name inside Project/assets/images/
   alt_text     VARCHAR(255) NOT NULL,              -- required for accessibility
   sort_order   INTEGER      NOT NULL DEFAULT 0,
-  FOREIGN KEY (category_id) REFERENCES categories (id)
+  FOREIGN KEY (category_id) REFERENCES categories (id) ON UPDATE CASCADE ON DELETE RESTRICT  -- a category that still has projects cannot be deleted
 );
 CREATE INDEX IF NOT EXISTS idx_projects_category ON projects (category_id);
 

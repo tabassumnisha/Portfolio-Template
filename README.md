@@ -33,7 +33,7 @@ Mobile: ![Website on a phone](docs/screenshots/mobile.png) ![Admin panel on a ph
 - Categories, services, skills and tags with full add / edit / reorder / delete
 - Changes are validated on the server and go live as soon as you press **Save changes**
 
-**Deployment**: run with `python3 server.py` on a VPS, or `docker compose up --build -d`. Guide: [HowToSetup.md](HowToSetup.md).
+**Deployment**: run with `python3 server.py` on a VPS, with `docker compose up --build -d`, or as a live demo on Vercel (`api/index.py`, `vercel.json`). Guide: [HowToSetup.md](HowToSetup.md).
 
 ## Quick start (3 minutes)
 Requires Python 3.10 or newer (`python3 --version`).
@@ -54,6 +54,7 @@ Project/             the website (index.html, css/, js/, assets/) and the admin 
 database/            schema.sql (creates the database from scratch), seed.sql (demo records), default-*.json (initial content)
 tests/               automated tests            ->  python3 -m unittest discover -s tests -v
 docs/                customisation guide, API reference, screenshots
+api/index.py         Vercel serverless entry point (reuses server.py), configured by vercel.json
 Dockerfile, docker-compose.yml, .env.example
 README.md, HowToSetup.md, CLAUDE.md, CHANGELOG.md, LICENSE-NOTE.md
 ```

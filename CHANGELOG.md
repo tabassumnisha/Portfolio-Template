@@ -2,6 +2,18 @@
 
 Format: [Keep a Changelog](https://keepachangelog.com/). Versions follow semantic versioning.
 
+## [1.3.0] — 2026-11-09
+### Added
+- Vercel deployment: `api/index.py` and `vercel.json` run the website, admin panel and API as one serverless function (HowToSetup.md, option C).
+- `STATELESS_SESSIONS` (automatic on Vercel): the signed session cookie carries the session, so sign-in works across serverless instances.
+- `DEMO_MODE`: blocks admin password changes in a public demo.
+- Tests for the Vercel handler, stateless sessions and demo mode (`tests/test_vercel.py`).
+### Changed
+- `projects.category_id` foreign key now has explicit `ON UPDATE CASCADE ON DELETE RESTRICT` in `database/schema.sql`.
+- Docs describe the Vercel demo and its temporary storage.
+### Fixed
+- An upload larger than 3 MB now reliably returns the "Image is larger than 3 MB" message: the rejected body is read and dropped before the reply, instead of the connection being closed mid-upload.
+
 ## [1.2.0] — 2026-10-31
 ### Added
 - Form-based admin panel (`/admin/`): site profile, projects, categories, services, skills and tags, with add, edit, reorder and delete; no JSON editing needed.

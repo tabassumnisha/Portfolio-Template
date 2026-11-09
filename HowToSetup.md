@@ -74,16 +74,32 @@ The live content is stored as JSON in the table `app_content`; `categories`, `pr
 ## 5. Change the branding
 Everything is editable in `/admin/`: the **Site profile** tab holds your name, initials, role, texts, WhatsApp number, e-mail, social links and the hero/about photos (upload your own). **Projects**, **Categories**, **Services** and **Skills** hold the portfolio content. Theme colours and fonts are CSS variables in `Project/css/base.css` (see `docs/customisation.md`).
 
+## C. Deploy a live demo on Vercel
+The package includes `api/index.py` and `vercel.json`, so the whole site (website, admin panel and API) runs on Vercel's free plan with no build step.
+1. Push the project to a GitHub repository (never commit `.env`).
+2. In Vercel choose **Add New → Project**, import the repository and keep the defaults (Framework preset **Other**, no build command, no output directory).
+3. Before the first deploy open **Settings → Environment Variables** and add:
+   - `ADMIN_EMAIL`: the demo admin e-mail
+   - `ADMIN_PASSWORD`: a **non-sensitive** demo password, 14+ characters (never reuse a real one)
+   - `SESSION_SECRET`: `python3 -c "import secrets; print(secrets.token_hex(32))"`
+   - `DEMO_MODE=true`: stops visitors from changing the demo password
+4. Deploy. Open `https://YOUR-PROJECT.vercel.app/` and `/admin/`, sign in with the demo account, change one text, save and reload the public site.
+
+Important to know about Vercel:
+- Vercel has no persistent disk. The demo database lives in `/tmp` and is rebuilt from `database/` and your environment variables on a cold start, so **edits and uploads made in the demo are temporary** and may disappear. That is intended for a demo that always returns to a clean state.
+- Sessions are stored in the signed cookie (`STATELESS_SESSIONS` is switched on automatically on Vercel), so signing in keeps working across serverless instances.
+- For a real site where edits must be kept, use option A or B on a host with a persistent disk, or replace the SQLite layer in `server.py` (`connect()`, `get_content()`, `save_content()`) with a hosted database such as Firebase, Supabase or Postgres.
+
 ## 6. Set up a public demo (marketplace listing)
 A ZIP cannot host a demo; deploy it yourself:
-1. Deploy with option A or B on a host that has a public HTTPS address (any VPS, or a managed platform that builds the `Dockerfile` and offers a persistent disk for `/app/data`).
+1. Deploy with option A, B or C on a host that has a public HTTPS address (any VPS, a managed platform that builds the `Dockerfile` and offers a persistent disk for `/app/data`, or Vercel with option C).
 2. Set `COOKIE_SECURE=true`, and create a dedicated demo admin with a **non-sensitive** password in `.env`.
 3. Open the URL from another network, sign in at `/admin/` with the demo account, change one text, save, reload the public site.
 4. Enter the public URL and the demo e-mail and password in the listing form. Do not reuse a real password.
 
 ## 7. Updating, backups and tests
 - Back up the whole `data/` folder (or the `portfolio_data` volume): it holds the database and uploaded images.
-- To update, replace the program files (`server.py`, `validation.py`, `uploads.py`, `Project/`, `database/`) and restart; the `data/` folder is untouched.
+- To update, replace the program files (`server.py`, `validation.py`, `uploads.py`, `api/`, `vercel.json`, `Project/`, `database/`) and restart; the `data/` folder is untouched.
 - Run the tests any time: `python3 -m unittest discover -s tests -v`
 
 ## 8. Troubleshooting
@@ -95,3 +111,5 @@ A ZIP cannot host a demo; deploy it yourself:
 | Changes not visible | Save in the admin panel, then hard-reload the site (Ctrl+F5) |
 | Session lost after HTTPS | Use the same HTTPS address and set `COOKIE_SECURE=true` |
 | Docker data lost | You ran `docker compose down -v`; restore from your backup |
+| Edits disappear on Vercel | Expected: Vercel has no persistent disk (see option C) |
+| "Admin sign-in is disabled" on Vercel | Add `SESSION_SECRET` under Settings → Environment Variables and redeploy |
