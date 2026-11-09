@@ -24,7 +24,7 @@ Format: [Keep a Changelog](https://keepachangelog.com/). Versions follow semanti
 - Form-based admin panel (`/admin/`): site profile, projects, categories, services, skills and tags, with add, edit, reorder and delete; no JSON editing needed.
 - Image upload for projects and the hero/about photos (JPG, PNG, WebP, GIF, 3 MB maximum, checked by file signature).
 - Strict Content-Security-Policy headers, a session-check endpoint and end-to-end tests (sign-in, roles, validation, uploads).
-- `.gitignore`, `docs/api.md`, admin screenshots.
+- `.gitignore`, `docs/api-reference.md`, admin screenshots.
 ### Changed
 - Admin panel moved out of `server.py` into `Project/admin/`; validation moved to `validation.py`, upload helpers to `uploads.py`.
 - Content validation is stricter (unknown fields rejected, categories and featured project must exist, links must be http/https).
