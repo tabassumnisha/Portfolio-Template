@@ -24,6 +24,10 @@
     /* Generic text bindings: <span data-bind="owner.name"></span> */
     $$('[data-bind]').forEach(function (n) { var v = P.get(n.getAttribute('data-bind')); if (v != null) n.textContent = v; });
 
+    /* Footer quote: shown only when one is set in the admin panel */
+    var quote = $('.f-quote');
+    if (quote && site.footerQuote) { quote.hidden = false; if (quote.parentNode) quote.parentNode.classList.remove('no-quote'); }
+
     /* Hero title: last word of the name is highlighted */
     var h1 = $('#heroName');
     if (h1 && owner.name) {

@@ -34,7 +34,7 @@ window.SITE_CONFIG = {
   "site": {
     "title": "Your Name — Designer & Creative Professional",
     "description": "A responsive creative portfolio template. Personalize your name, work, and contact details before publishing.",
-    "footerQuote": "Good Design is Good Business",
+    "footerQuote": "",
     "formNote": "Clicking Send Message opens WhatsApp with your message. Nothing is stored or sent to a server."
   }
 };

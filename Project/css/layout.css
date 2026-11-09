@@ -67,6 +67,7 @@
 .f-brand:hover{transform:translateY(-3px)}
 .f-brand img{height:140px;width:auto;filter:drop-shadow(0 6px 24px rgba(123,60,255,.35))}
 .f-quote{display:flex;align-items:center;gap:20px;margin:0;font-size:17px;color:#e9e4ff;white-space:nowrap}
+.f-quote[hidden]{display:none}
 .f-quote span{width:clamp(30px,6vw,90px);height:1px;background:linear-gradient(90deg,transparent,#8a5cff)}
 .f-quote span:last-child{background:linear-gradient(270deg,transparent,#8a5cff)}
 .f-links{display:flex;flex-direction:column;align-items:flex-end;gap:10px;font-size:15px}

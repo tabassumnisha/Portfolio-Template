@@ -141,6 +141,9 @@ class ApiTests(unittest.TestCase):
         status, data, _ = self.call("GET", "/api/data")
         self.assertEqual(status, 200); self.assertTrue(data["projects"])
         self.assertIn(b"window.SITE_CONFIG", self.call("GET", "/config.js")[1])
+        for path in ("/", "/config.js", "/api/config"):   # the demo footer quote was removed from every public source
+            body = self.call("GET", path)[1]
+            self.assertNotIn(b"Good Design is Good Business", body if isinstance(body, bytes) else json.dumps(body).encode(), path)
 
     def test_admin_page_has_strict_csp(self):
         status, _, r = self.call("GET", "/admin/")

@@ -2,13 +2,14 @@
 
 Format: [Keep a Changelog](https://keepachangelog.com/). Versions follow semantic versioning.
 
-## [1.3.0] — 2026-11-09
+## [1.3.1] — 2026-11-09
 ### Added
 - Vercel deployment: `api/index.py` and `vercel.json` run the website, admin panel and API as one serverless function (HowToSetup.md, option C).
 - `STATELESS_SESSIONS` (automatic on Vercel): the signed session cookie carries the session, so sign-in works across serverless instances.
 - `DEMO_MODE`: blocks admin password changes in a public demo.
 - Tests for the Vercel handler, stateless sessions and demo mode (`tests/test_vercel.py`).
 ### Changed
+- The footer quote "Good Design is Good Business" is removed. The footer quote is now empty by default and only appears when you enter one under Site profile → Page texts → Footer quote.
 - `projects.category_id` foreign key now has explicit `ON UPDATE CASCADE ON DELETE RESTRICT` in `database/schema.sql`.
 - Docs describe the Vercel demo and its temporary storage.
 ### Fixed
