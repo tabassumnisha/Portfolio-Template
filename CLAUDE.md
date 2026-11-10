@@ -19,7 +19,7 @@ Project/           static files served at /
   admin/           admin panel: index.html, admin.css, core.js (helpers, API), editors.js (one editor per section), main.js
   assets/images/   original placeholder artwork
 database/          schema.sql (creates everything from scratch, idempotent; no sessions table, sessions are signed cookies), seed.sql (demo rows), default-portfolio.json, default-config.json
-tests/             test_server.py, test_vercel.py (unittest: validation, auth, CSRF, uploads, throttling, Vercel handler)
+tests/             test_server.py, test_vercel.py, test_schema.py (unittest: validation, auth, CSRF, uploads, throttling, Vercel handler, schema, repository layout)
 docs/              customisation.md, architecture.md, api-reference.md, screenshots
 AGENTS.md, requirements.txt   short pointer for other AI tools; "no third-party dependencies" declaration
 api/index.py       Vercel entry: restores the original path from ?__p= and reuses server.Handler (vercel.json rewrites everything to it)
