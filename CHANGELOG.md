@@ -2,6 +2,13 @@
 
 Format: [Keep a Changelog](https://keepachangelog.com/). Versions follow semantic versioning.
 
+## [1.3.3] — 2026-11-10
+### Added
+- `requirements.txt` (declares that there are no third-party dependencies), `docs/architecture.md`, `AGENTS.md`.
+- Docker health check in `docker-compose.yml`.
+### Changed
+- `docs/api.md` is now `docs/api-reference.md`.
+
 ## [1.3.2] — 2026-11-09
 ### Added
 - `DEMO_MODE=true` now also provides a built-in public demo sign-in (`demo_defaults.py`), so a Vercel demo needs only that one setting. Your own `ADMIN_EMAIL`, `ADMIN_PASSWORD` and `SESSION_SECRET` override it. Without `DEMO_MODE` nothing changes and no default account exists.

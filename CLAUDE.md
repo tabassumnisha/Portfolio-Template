@@ -20,7 +20,8 @@ Project/           static files served at /
   assets/images/   original placeholder artwork
 database/          schema.sql (creates everything from scratch, idempotent), seed.sql (demo rows), default-portfolio.json, default-config.json
 tests/             test_server.py, test_vercel.py (unittest: validation, auth, CSRF, uploads, throttling, Vercel handler)
-docs/              customisation.md, api-reference.md, screenshots
+docs/              customisation.md, architecture.md, api-reference.md, screenshots
+AGENTS.md, requirements.txt   short pointer for other AI tools; "no third-party dependencies" declaration
 api/index.py       Vercel entry: restores the original path from ?__p= and reuses server.Handler (vercel.json rewrites everything to it)
 Dockerfile, docker-compose.yml, .env.example, vercel.json
 ```

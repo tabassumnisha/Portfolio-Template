@@ -54,10 +54,10 @@ uploads.py           image type detection and safe file names
 Project/             the website (index.html, css/, js/, assets/) and the admin panel (admin/)
 database/            schema.sql (creates the database from scratch), seed.sql (demo records), default-*.json (initial content)
 tests/               automated tests            ->  python3 -m unittest discover -s tests -v
-docs/                customisation guide, API reference, screenshots
+docs/                customisation guide, architecture, API reference, screenshots
 api/index.py         Vercel serverless entry point (reuses server.py), configured by vercel.json
 Dockerfile, docker-compose.yml, .env.example
-README.md, HowToSetup.md, CLAUDE.md, CHANGELOG.md, LICENSE-NOTE.md
+README.md, HowToSetup.md, CLAUDE.md, AGENTS.md, requirements.txt, CHANGELOG.md, LICENSE-NOTE.md
 ```
 
 ## Security model
@@ -65,7 +65,7 @@ README.md, HowToSetup.md, CLAUDE.md, CHANGELOG.md, LICENSE-NOTE.md
 - Passwords are stored as salted PBKDF2-HMAC-SHA256 hashes; sessions expire after 8 hours; 8 failed sign-ins per 5 minutes per address are throttled.
 - All SQL uses bound parameters. Uploads are accepted only as real JPG/PNG/WebP/GIF files (checked by file signature), size-limited, stored under random names.
 - Strict Content-Security-Policy, `nosniff`, frame and referrer headers. Data is rendered with `textContent`, never `innerHTML`.
-- No default password ships. The first administrator is created from your own `.env`.
+- No default password ships. The first administrator is created from your own `.env`. The only built-in sign-in is the public demo account, active solely when `DEMO_MODE=true` (never use that on a real site).
 - This is a small single-admin CMS. Use HTTPS (`COOKIE_SECURE=true`) in production, back up the `data/` folder, and add proxy-level rate limiting for busy public sites.
 
 ## Tests
