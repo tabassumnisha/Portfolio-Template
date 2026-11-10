@@ -7,6 +7,8 @@ Follow this guide from top to bottom on a clean machine. No packages need to be 
 - **Docker Engine 24+ and Docker Compose v2** for Docker deployment: `docker --version`, `docker compose version`
 - A unique admin password (14+ characters) and a random session secret
 
+**Tested with Python 3.12** (3.10+ works). Start command: `python3 server.py`. Docker image: `python:3.12-slim`. Vercel: Python 3.12 (`.python-version`).
+
 ## 1. Get the files
 Unzip the package into a folder, for example `/opt/portfolio-cms`, and open a terminal there. The folder contains `server.py`, `Project/`, `database/`, `Dockerfile` and this guide.
 
@@ -56,13 +58,17 @@ Then: `sudo useradd --system portfolio`, `sudo chown -R portfolio /opt/portfolio
 2. Build and start: `docker compose up --build -d`
 3. Check: `docker compose ps` and `docker compose logs -f portfolio`
 4. Open `http://SERVER:8080/` and `/admin/`. Change the host port with `PORTFOLIO_PORT` in `.env`.
+   Without Compose: `docker build -t portfolio-cms . && docker run -d --name portfolio-cms --env-file .env -p 8080:8080 -v portfolio_data:/app/data portfolio-cms` (add `-e HOST=0.0.0.0 -e DATABASE_PATH=/app/data/portfolio.sqlite3` if your `.env` sets other values).
 5. The database and uploaded images live in the named volume `portfolio_data`, so they survive updates. `docker compose down` stops the site; **`docker compose down -v` deletes all saved content**.
 
 ## 3. Database
 You do not run any SQL by hand: the server applies `database/schema.sql` on every start (idempotent) and, on an empty database, loads `database/seed.sql` and `database/default-*.json`. To inspect or rebuild it manually with SQLite:
 ```bash
-sqlite3 test.db < database/schema.sql && sqlite3 test.db < database/seed.sql
+mkdir -p data
+sqlite3 data/portfolio.sqlite3 < database/schema.sql     # creates every table and index from an empty file
+sqlite3 data/portfolio.sqlite3 < database/seed.sql       # optional demo rows (profile, photos, contacts, projects, services, skills)
 ```
+Tables: `profile`, `photos`, `contacts`, `projects`, `categories`, `services`, `skills`, `other_skills`, `site_settings`, `admin_users`, `app_content`. There is no `sessions` table: a session is a signed cookie (see the header of `database/schema.sql`).
 The live content is stored as JSON in the table `app_content`; `categories`, `projects`, `services`, `skills` are relational demo/reference tables that mirror the default content. To start over, stop the server and delete the `data/` folder.
 
 ## 4. First admin login
@@ -72,7 +78,18 @@ The live content is stored as JSON in the table `app_content`; `categories`, `pr
 4. If you forget the password: stop the server, delete the `admin_users` row (`sqlite3 data/portfolio.sqlite3 "DELETE FROM admin_users;"`), put a new `ADMIN_PASSWORD` in `.env` and start again. There is no public reset endpoint on purpose.
 
 ## 5. Change the branding
-Everything is editable in `/admin/`: the **Site profile** tab holds your name, initials, role, texts, WhatsApp number, e-mail, social links and the hero/about photos (upload your own). **Projects**, **Categories**, **Services** and **Skills** hold the portfolio content. Theme colours and fonts are CSS variables in `Project/css/base.css` (see `docs/customisation.md`).
+Everything is editable in `/admin/`: the **Site profile** tab holds your name, initials, role, texts, WhatsApp number, e-mail, social links and the hero/about photos (upload your own). **Projects**, **Categories**, **Services** and **Skills** hold the portfolio content. 
+**Theme variables** (brand colours and fonts) are CSS custom properties at the top of `Project/css/base.css`, in the `:root` block. Change a value there and reload the site:
+| Variable | Controls |
+|---|---|
+| `--violet`, `--purple`, `--lilac` | main brand colours |
+| `--btn-from`, `--btn-to` | gradient of the primary buttons |
+| `--accent-text` | coloured headline words and links |
+| `--navy`, `--navy2`, `--ink` | dark backgrounds and text |
+| `--soft`, `--paper`, `--line`, `--muted` | light sections, borders, secondary text |
+| `--serif`, `--sans`, `--script` | heading, body and handwriting fonts |
+
+Full list and examples: `docs/customisation.md`.
 
 ## C. Deploy a live demo on Vercel
 The package includes `api/index.py` and `vercel.json`, so the whole site (website, admin panel and API) runs on Vercel's free plan with no build step.
@@ -80,7 +97,8 @@ The package includes `api/index.py` and `vercel.json`, so the whole site (websit
 2. In Vercel choose **Add New → Project**, import the repository and keep the defaults (Framework preset **Other**, no build command, no output directory).
 3. Before the first deploy open **Settings → Environment Variables** and add one variable: `DEMO_MODE=true`. This switches on the built-in **public demo sign-in** (`demo@example.com` / `Demo-Admin-2026!`, defined in `demo_defaults.py`) and stops visitors from changing the demo password. To use your own demo account instead, also set `ADMIN_EMAIL`, `ADMIN_PASSWORD` (14+ characters, never a real password) and `SESSION_SECRET` (`python3 -c "import secrets; print(secrets.token_hex(32))"`); they override the built-in values.
    **Never use `DEMO_MODE` on a real site**: its sign-in is public.
-4. Deploy. Open `https://YOUR-PROJECT.vercel.app/` and `/admin/`, sign in with the demo account (`demo@example.com` / `Demo-Admin-2026!` unless you set your own), change one text, save and reload the public site.
+4. Check the project settings: **Root Directory** is the repository root, **Framework Preset** is *Other*, and build, output and install commands are empty. The repository has no `index.html` at its root on purpose: a static file there would be served by Vercel before the rewrite in `vercel.json` and hide the server.
+5. Deploy. Open `https://YOUR-PROJECT.vercel.app/api/health` (it must answer `{"ok": true, ...}`), then `https://YOUR-PROJECT.vercel.app/` and `/admin/`, sign in with the demo account (`demo@example.com` / `Demo-Admin-2026!` unless you set your own), change one text, save and reload the public site.
 
 Important to know about Vercel:
 - Vercel has no persistent disk. The demo database lives in `/tmp` and is rebuilt from `database/` and your environment variables on a cold start, so **edits and uploads made in the demo are temporary** and may disappear. That is intended for a demo that always returns to a clean state.

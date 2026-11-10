@@ -37,10 +37,11 @@ Browser ──► server.py Handler ──► static file from Project/         
 
 - `app_content(key, value)`: the live content of the site as JSON (`portfolio`, `config`). This is what the website shows.
 - `admin_users`: administrator accounts with salted PBKDF2-HMAC-SHA256 password hashes.
+- `profile`, `photos`, `contacts`: the owner, the hero/about photos and the contact details (`photos.owner_id` and `contacts.owner_id` reference `profile.id`; `profile.slug` is unique).
 - `categories`, `projects`, `services`, `skills`, `other_skills`, `site_settings`: relational demo and reference tables that mirror the default content
   (`projects.category_id` references `categories` with `ON UPDATE CASCADE ON DELETE RESTRICT`). The running site reads `app_content`, not these tables.
 
-`database/schema.sql` creates everything from an empty database and is safe to run repeatedly.
+`database/schema.sql` creates everything from an empty database and is safe to run repeatedly. There is no `sessions` table on purpose: sessions are signed cookies (see below).
 
 ## Sessions and security
 

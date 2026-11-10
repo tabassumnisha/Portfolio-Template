@@ -18,7 +18,7 @@ Project/           static files served at /
   js/  data.js (static fallback), utils, content, gallery, services, nav, whatsapp-inquiry, effects, main
   admin/           admin panel: index.html, admin.css, core.js (helpers, API), editors.js (one editor per section), main.js
   assets/images/   original placeholder artwork
-database/          schema.sql (creates everything from scratch, idempotent), seed.sql (demo rows), default-portfolio.json, default-config.json
+database/          schema.sql (creates everything from scratch, idempotent; no sessions table, sessions are signed cookies), seed.sql (demo rows), default-portfolio.json, default-config.json
 tests/             test_server.py, test_vercel.py (unittest: validation, auth, CSRF, uploads, throttling, Vercel handler)
 docs/              customisation.md, architecture.md, api-reference.md, screenshots
 AGENTS.md, requirements.txt   short pointer for other AI tools; "no third-party dependencies" declaration
@@ -39,6 +39,8 @@ Runtime content lives as JSON in the SQLite table `app_content` (keys `portfolio
 - Keep files small; one file per feature. Media queries for the website go in `css/responsive.css`.
 - Update `CHANGELOG.md` for every user-visible change and keep the docs in sync.
 
+- Never put a static file (`index.html`, `robots.txt`, …) at the repository root: Vercel serves static files before the rewrite in `vercel.json`, which hides the server (`tests/test_schema.py` checks this).
+- Every variable the code reads must be listed in `.env.example` (checked by a test).
 - On Vercel (`VERCEL` set) the database lives in `/tmp` and sessions are stateless signed cookies (`STATELESS_SESSIONS`); keep both code paths working and tested (`tests/test_vercel.py`).
 
 ## Commands

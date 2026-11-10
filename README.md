@@ -12,7 +12,15 @@ Built with HTML5, CSS3 and vanilla JavaScript on the front end and a **Python st
 
 Mobile: ![Website on a phone](docs/screenshots/mobile.png) ![Admin panel on a phone](docs/screenshots/admin-panel-mobile.png)
 
-**Live demo:** the public demo URL and demo sign-in are shown on the marketplace listing where you bought this product.
+## Live demo
+| | |
+|---|---|
+| Website | https://portfolio-template-six-delta.vercel.app/ |
+| Admin panel | https://portfolio-template-six-delta.vercel.app/admin/ |
+| Demo e-mail | `demo@example.com` |
+| Demo password | `Demo-Admin-2026!` |
+
+This is a **public demo account** (`DEMO_MODE=true`), not a real administrator. In the demo the password cannot be changed, and changes you save are temporary because Vercel has no persistent disk. Your own installation never contains this account: you create your administrator from `.env` (see HowToSetup.md).
 
 ## Who is it for?
 - Designers, UI/UX designers, illustrators and brand designers who want to update their own portfolio
@@ -53,7 +61,7 @@ validation.py        validation of portfolio data and site configuration
 uploads.py           image type detection and safe file names
 Project/             the website (index.html, css/, js/, assets/) and the admin panel (admin/)
 database/            schema.sql (creates the database from scratch), seed.sql (demo records), default-*.json (initial content)
-tests/               automated tests            ->  python3 -m unittest discover -s tests -v
+tests/               automated tests (41)       ->  python3 -m unittest discover -s tests -v
 docs/                customisation guide, architecture, API reference, screenshots
 api/index.py         Vercel serverless entry point (reuses server.py), configured by vercel.json
 Dockerfile, docker-compose.yml, .env.example

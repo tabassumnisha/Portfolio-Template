@@ -2,6 +2,16 @@
 
 Format: [Keep a Changelog](https://keepachangelog.com/). Versions follow semantic versioning.
 
+## [1.3.4] — 2026-11-10
+### Fixed
+- **Vercel demo showed only a redirect page.** A static `index.html` at the repository root was served by Vercel before the rewrite in `vercel.json`, so `/` never reached the server. The file is removed; a test guards against it coming back.
+### Added
+- Tables `profile`, `photos` and `contacts` (primary and foreign keys, indexes on `slug` and `owner_id`) in `database/schema.sql`, with sample rows in `database/seed.sql`. `schema.sql` now documents why there is no `sessions` table (signed-cookie sessions).
+- `.env.example`: lists `VERCEL` and explains how this server's variable names (`SESSION_SECRET`, `DATABASE_PATH`, `ADMIN_PASSWORD`) map to the common `SECRET_KEY`, `DB_PATH`, `ADMIN_PASSWORD_HASH`, `UPLOAD_DIR`, `ALLOWED_ORIGINS`.
+- README: demo URL and the public demo sign-in. HowToSetup.md: manual database creation from `schema.sql`, `docker run`, theme variables, Python version, Vercel settings and a health check.
+- `.python-version` (3.12) for Vercel.
+- `tests/test_schema.py`: schema and indexes, `.env.example` completeness, repository layout, and the Vercel demo (`DEMO_MODE` only) end to end.
+
 ## [1.3.3] — 2026-11-10
 ### Added
 - `requirements.txt` (declares that there are no third-party dependencies), `docs/architecture.md`, `AGENTS.md`.

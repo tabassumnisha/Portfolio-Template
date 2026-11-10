@@ -4,6 +4,21 @@
 -- Runtime JSON content is initialized from database/default-portfolio.json and default-config.json.
 -- ============================================================================
 
+INSERT INTO profile (id, slug, full_name, initials, role_title, intro, about, location, experience) VALUES
+  (1, 'your-name', 'Your Name', 'YN', 'Graphic Designer & Digital Creator',
+   'I create visually stunning designs that bring ideas to life. Passionate about modern design, branding and digital experiences.',
+   'I''m Your Name, a passionate designer with a strong eye for detail and a love for clean, modern design. I create visuals that look beautiful, communicate clearly and build strong brand identities.',
+   'Your City, Country', '2+ Years');
+
+INSERT INTO photos (id, owner_id, slot, file_name, alt_text) VALUES
+  (1, 1, 'hero', 'portrait-placeholder.webp', 'Placeholder portrait of the portfolio owner'),
+  (2, 1, 'about', 'about-photo.jpg', 'Placeholder photo of the portfolio owner');
+
+INSERT INTO contacts (id, owner_id, kind, value, sort_order) VALUES
+  (1, 1, 'whatsapp', '+10000000000', 1),
+  (2, 1, 'email', 'hello@example.com', 2),
+  (3, 1, 'website', 'https://example.com', 3);
+
 INSERT INTO categories (id, label, sort_order) VALUES
   ('branding', 'Branding', 1),
   ('social', 'Social Media', 2),
