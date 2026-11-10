@@ -2,6 +2,16 @@
 
 Follow this guide from top to bottom on a clean machine. No packages need to be installed.
 
+**At a glance**
+| Topic | Where | Short answer |
+|---|---|---|
+| Local Python | section A | `cp .env.example .env`, edit it, `python3 server.py` |
+| Database from `schema.sql` | section 3 | automatic on start, or `sqlite3 data/portfolio.sqlite3 < database/schema.sql` |
+| First admin login | section 4 | `/admin/` with `ADMIN_EMAIL` and `ADMIN_PASSWORD` from `.env` |
+| Branding | section 5 | admin **Site profile** tab (name, texts, photos) and CSS theme variables in `Project/css/base.css` |
+| Docker | section B | `docker compose up --build -d`; database and uploads live in the volume `portfolio_data` (mounted at `/app/data`) |
+| Vercel | section C | environment variable `DEMO_MODE=true`; **no persistent disk: the database is in `/tmp` and is rebuilt on every cold start, so edits are temporary** |
+
 ## Prerequisites
 - **Python 3.10 or newer** for direct (VPS) deployment: `python3 --version`
 - **Docker Engine 24+ and Docker Compose v2** for Docker deployment: `docker --version`, `docker compose version`
@@ -10,7 +20,7 @@ Follow this guide from top to bottom on a clean machine. No packages need to be 
 **Tested with Python 3.12** (3.10+ works). Start command: `python3 server.py`. Docker image: `python:3.12-slim`. Vercel: Python 3.12 (`.python-version`).
 
 ## 1. Get the files
-Unzip the package into a folder, for example `/opt/portfolio-cms`, and open a terminal there. The folder contains `server.py`, `Project/`, `database/`, `Dockerfile` and this guide.
+Unzip the package into a folder, for example `/opt/portfolio-cms`, and open a terminal there. The folder contains `server.py`, `cms/`, `Project/`, `database/`, `Dockerfile` and this guide.
 
 ## 2. Configure `.env`
 ```bash
@@ -103,7 +113,7 @@ The package includes `api/index.py` and `vercel.json`, so the whole site (websit
 Important to know about Vercel:
 - Vercel has no persistent disk. The demo database lives in `/tmp` and is rebuilt from `database/` and your environment variables on a cold start, so **edits and uploads made in the demo are temporary** and may disappear. That is intended for a demo that always returns to a clean state.
 - Sessions are stored in the signed cookie (`STATELESS_SESSIONS` is switched on automatically on Vercel), so signing in keeps working across serverless instances.
-- For a real site where edits must be kept, use option A or B on a host with a persistent disk, or replace the SQLite layer in `server.py` (`connect()`, `get_content()`, `save_content()`) with a hosted database such as Firebase, Supabase or Postgres.
+- For a real site where edits must be kept, use option A or B on a host with a persistent disk, or replace the SQLite layer in `cms/db.py` (`connect()`, `get_content()`, `save_content()`) with a hosted database such as Firebase, Supabase or Postgres.
 
 ## 6. Set up a public demo (marketplace listing)
 A ZIP cannot host a demo; deploy it yourself:
@@ -114,7 +124,7 @@ A ZIP cannot host a demo; deploy it yourself:
 
 ## 7. Updating, backups and tests
 - Back up the whole `data/` folder (or the `portfolio_data` volume): it holds the database and uploaded images.
-- To update, replace the program files (`server.py`, `validation.py`, `uploads.py`, `api/`, `vercel.json`, `Project/`, `database/`) and restart; the `data/` folder is untouched.
+- To update, replace the program files (`server.py`, `cms/`, `validation.py`, `uploads.py`, `demo_defaults.py`, `api/`, `vercel.json`, `Project/`, `database/`) and restart; the `data/` folder is untouched.
 - Run the tests any time: `python3 -m unittest discover -s tests -v`
 
 ## 8. Troubleshooting

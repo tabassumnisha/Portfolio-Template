@@ -3,6 +3,7 @@
 Guidance for AI coding agents (Codex, Cursor, Copilot, Claude Code and others) working on this repository.
 
 The full guide is in [CLAUDE.md](CLAUDE.md). Read it first: it has the folder map, the rules that must not be broken and the commands.
+The server is the `cms/` package (settings, db, auth, web, routes_public, routes_admin, app); `server.py` is only the entry point.
 For how the parts fit together see [docs/architecture.md](docs/architecture.md); for the API see [docs/api-reference.md](docs/api-reference.md).
 
 Short version:

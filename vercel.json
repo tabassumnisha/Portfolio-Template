@@ -1,7 +1,7 @@
 {
   "functions": {
     "api/index.py": {
-      "includeFiles": "{server.py,validation.py,uploads.py,demo_defaults.py,Project/**,database/**}",
+      "includeFiles": "{server.py,cms/**,validation.py,uploads.py,demo_defaults.py,Project/**,database/**}",
       "maxDuration": 10
     }
   },

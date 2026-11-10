@@ -21,6 +21,7 @@ sys.path.insert(0, str(ROOT))
 sys.dont_write_bytecode = True
 
 import server  # noqa: E402
+from cms import settings  # noqa: E402
 
 
 def build_database():
@@ -71,8 +72,9 @@ class SchemaTests(unittest.TestCase):
 class RepositoryLayoutTests(unittest.TestCase):
     def test_env_example_lists_every_variable_the_server_reads(self):
         read = set()
-        for name in ("server.py", "uploads.py", "validation.py", "demo_defaults.py", "api/index.py"):
-            read |= set(re.findall(r'os\.(?:getenv|environ\.get)\(\s*"([A-Z_]+)"', (ROOT / name).read_text(encoding="utf-8")))
+        sources = [ROOT / n for n in ("server.py", "uploads.py", "validation.py", "demo_defaults.py", "api/index.py")] + sorted((ROOT / "cms").glob("*.py"))
+        for path in sources:
+            read |= set(re.findall(r'os\.(?:getenv|environ\.get)\(\s*"([A-Z_]+)"', path.read_text(encoding="utf-8")))
         listed = set(re.findall(r"^#?\s*([A-Z][A-Z_]+)=", (ROOT / ".env.example").read_text(encoding="utf-8"), re.M))
         self.assertTrue(read)
         self.assertEqual(read - listed, set(), "variables read by the code but missing from .env.example")
@@ -103,6 +105,41 @@ class RepositoryLayoutTests(unittest.TestCase):
             self.assertIn(needed, readme)
 
 
+class CodeStructureTests(unittest.TestCase):
+    """Static checks a reviewer would otherwise do by reading cms/."""
+
+    def sources(self):
+        return {p.name: p.read_text(encoding="utf-8") for p in sorted((ROOT / "cms").glob("*.py"))}
+
+    def test_every_write_route_is_guarded(self):
+        text = self.sources()["routes_admin.py"]
+        for function in ("handle_put", "change_password", "upload"):
+            body = text.split("def " + function + "(", 1)[1].split("\ndef ", 1)[0]
+            self.assertIn("require_admin()", body, function)
+        self.assertNotIn("def handle_delete", text)
+        self.assertNotIn("do_DELETE", self.sources()["app.py"])
+
+    def test_sql_is_parameterised_and_there_are_no_deletes(self):
+        for name, text in self.sources().items():
+            self.assertNotRegex(text.upper(), r"\bDELETE\s+FROM\b", name)
+            for call in re.findall(r"\.execute\((.*)", text):
+                self.assertNotRegex(call, r"""\bf["']|\.format\(|\s%\s|"\s*\+""", name + ": " + call)
+
+    def test_server_is_split_into_small_modules(self):
+        names = set(self.sources())
+        self.assertTrue({"settings.py", "db.py", "auth.py", "web.py", "routes_public.py", "routes_admin.py", "app.py"} <= names)
+        for name, text in self.sources().items():
+            self.assertLess(len(text.splitlines()), 150, name)
+        self.assertLess(len((ROOT / "server.py").read_text(encoding="utf-8").splitlines()), 40)
+
+    def test_docs_for_reviewers_exist(self):
+        for name in ("docs/ERD.md", "docs/security.md", "docs/architecture.md", "docs/api-reference.md"):
+            self.assertTrue((ROOT / name).is_file(), name)
+        self.assertIn("erDiagram", (ROOT / "docs/ERD.md").read_text(encoding="utf-8"))
+        self.assertIn("single-owner", (ROOT / "README.md").read_text(encoding="utf-8").lower())
+        self.assertIn("no mobile app", (ROOT / "README.md").read_text(encoding="utf-8").lower())
+
+
 class DemoOnlyVercelTests(unittest.TestCase):
     """The marketplace demo: Vercel with ONLY DEMO_MODE=true. Sign-in must work and the sample portfolio must load."""
     NAMES = ("DATABASE_PATH", "ADMIN_EMAIL", "ADMIN_PASSWORD", "SESSION_SECRET", "COOKIE_SECURE", "STATELESS_SESSIONS", "DEMO_MODE", "VERCEL")
@@ -128,7 +165,7 @@ class DemoOnlyVercelTests(unittest.TestCase):
         for k, v in cls.saved.items():
             if v is None: os.environ.pop(k, None)
             else: os.environ[k] = v
-        server.STATELESS_SESSIONS = False; server.DEMO_MODE = False
+        settings.STATELESS_SESSIONS = False; settings.DEMO_MODE = False
 
     def call(self, method, path, body=None, cookie=None):
         target = "/api/index?__p=" + path
@@ -150,6 +187,15 @@ class DemoOnlyVercelTests(unittest.TestCase):
         self.assertEqual(status, 200)
         data = json.loads(body)
         self.assertEqual(len(data["projects"]), 6)
+
+    def test_cold_start_demo_has_projects_with_photos(self):
+        """A cold start builds a fresh database: at least three projects, each with a photo that really exists."""
+        data = json.loads(self.call("GET", "api/data")[1])
+        self.assertGreaterEqual(len(data["projects"]), 3)
+        for project in data["projects"]:
+            self.assertTrue((ROOT / "Project" / "assets" / "images" / project["image"]).is_file(), project["image"])
+            status, body, _ = self.call("GET", "assets/images/" + project["image"])
+            self.assertEqual(status, 200)
 
     def test_demo_sign_in_works_and_admin_content_is_reachable(self):
         server.LOGIN_FAILURES.clear()

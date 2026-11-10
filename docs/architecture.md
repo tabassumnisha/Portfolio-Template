@@ -7,7 +7,12 @@ Python standard library on the server, plain HTML, CSS and JavaScript in the bro
 
 | Part | Files | Responsibility |
 |---|---|---|
-| HTTP server | `server.py` | Routing, static files, JSON API, sign-in and sessions, uploads, database start-up, security headers |
+| Entry point | `server.py` | `python3 server.py` starts `cms.app` |
+| Settings | `cms/settings.py` | Paths, limits and environment variables |
+| Data layer | `cms/db.py` | SQLite connection, schema and seed start-up, content storage, admin queries (bound parameters only) |
+| Authentication | `cms/auth.py` | Password hashing, signed-cookie sessions, sign-in throttling |
+| HTTP base | `cms/web.py` | Security headers, JSON helpers, request limits, `require_admin()` |
+| Routes | `cms/routes_public.py`, `cms/routes_admin.py`, `cms/app.py` | Public and admin endpoints and the request handler that dispatches to them |
 | Validation | `validation.py` | The only place content rules live: `portfolio_error()` and `config_error()` |
 | Uploads | `uploads.py` | Detects the real image type from the file signature, builds safe random file names, enforces the 3 MB limit |
 | Website | `Project/index.html`, `css/`, `js/` | Public site; text and images come from `/config.js` and `/js/data.js` |
@@ -19,7 +24,7 @@ Python standard library on the server, plain HTML, CSS and JavaScript in the bro
 ## How a request flows
 
 ```text
-Browser ──► server.py Handler ──► static file from Project/            (GET /, /css/..., /js/..., /admin/)
+Browser ──► cms.app.Handler ──► static file from Project/            (GET /, /css/..., /js/..., /admin/)
                               ├─► rendered content from SQLite         (GET /config.js, /js/data.js, /api/data, /api/config)
                               ├─► sign-in                              (POST /api/login, /api/logout)
                               └─► admin API, signed-in admin only      (GET /api/admin/session|content|images,
@@ -60,7 +65,7 @@ Browser ──► server.py Handler ──► static file from Project/         
 | Docker | `docker compose up --build -d` | Named volume `portfolio_data` |
 | Vercel (demo) | `api/index.py` + `vercel.json` | `/tmp`, rebuilt on a cold start, so changes are temporary |
 
-See `HowToSetup.md` for the steps and `docs/api-reference.md` for the API.
+See `HowToSetup.md` for the steps, `docs/api-reference.md` for the API, `docs/ERD.md` for the tables and `docs/security.md` for where each security rule is enforced.
 
 ## Extending
 

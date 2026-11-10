@@ -19,6 +19,7 @@ sys.path.insert(0, str(ROOT))
 sys.dont_write_bytecode = True
 
 import server  # noqa: E402
+from cms import settings  # noqa: E402
 
 PASSWORD = "demo-admin-password-2026"
 SETTINGS = ("DATABASE_PATH", "ADMIN_EMAIL", "ADMIN_PASSWORD", "SESSION_SECRET", "COOKIE_SECURE",
@@ -49,7 +50,7 @@ class VercelHandlerTests(unittest.TestCase):
         for k, v in cls.saved.items():
             if v is None: os.environ.pop(k, None)
             else: os.environ[k] = v
-        server.initialize.__globals__.update(STATELESS_SESSIONS=False, DEMO_MODE=False)
+        settings.STATELESS_SESSIONS = False; settings.DEMO_MODE = False
 
     def setUp(self):
         server.LOGIN_FAILURES.clear()
@@ -133,7 +134,7 @@ class DemoDefaultsTests(unittest.TestCase):
         for k, v in self.saved.items():
             if v is None: os.environ.pop(k, None)
             else: os.environ[k] = v
-        server.initialize.__globals__.update(STATELESS_SESSIONS=False, DEMO_MODE=False)
+        settings.STATELESS_SESSIONS = False; settings.DEMO_MODE = False
         self.tmp.cleanup()
 
     def request(self, httpd, method, path, body=None, cookie=None):
@@ -165,7 +166,7 @@ class DemoDefaultsTests(unittest.TestCase):
         import sqlite3
         os.environ["DEMO_MODE"] = "false"
         server.initialize()
-        self.assertEqual(server.ADMIN_PASSWORD, "")
+        self.assertEqual(settings.ADMIN_PASSWORD, "")
         self.assertFalse(server.session_secret_ready())
         con = sqlite3.connect(os.environ["DATABASE_PATH"])
         self.assertEqual(con.execute("SELECT COUNT(*) FROM admin_users").fetchone()[0], 0)
@@ -175,7 +176,7 @@ class DemoDefaultsTests(unittest.TestCase):
         os.environ.update(DEMO_MODE="true", ADMIN_PASSWORD="CHANGE_ME_USE_A_UNIQUE_LONG_PASSWORD", SESSION_SECRET="CHANGE_ME_GENERATE_AT_LEAST_32_RANDOM_BYTES")
         server.initialize()
         self.assertTrue(server.session_secret_ready())
-        self.assertFalse(server.ADMIN_PASSWORD.startswith("CHANGE_ME"))
+        self.assertFalse(settings.ADMIN_PASSWORD.startswith("CHANGE_ME"))
 
 
 class VercelConfigTests(unittest.TestCase):
@@ -183,7 +184,7 @@ class VercelConfigTests(unittest.TestCase):
         cfg = json.loads((ROOT / "vercel.json").read_text(encoding="utf-8"))
         self.assertEqual(cfg["rewrites"], [{"source": "/(.*)", "destination": "/api/index?__p=/$1"}])
         include = cfg["functions"]["api/index.py"]["includeFiles"]
-        for needed in ("server.py", "validation.py", "uploads.py", "demo_defaults.py", "Project/**", "database/**"):
+        for needed in ("server.py", "cms/**", "validation.py", "uploads.py", "demo_defaults.py", "Project/**", "database/**"):
             self.assertIn(needed, include)
 
 

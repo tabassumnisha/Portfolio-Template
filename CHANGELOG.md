@@ -2,6 +2,16 @@
 
 Format: [Keep a Changelog](https://keepachangelog.com/). Versions follow semantic versioning.
 
+## [1.4.0] — 2026-11-10
+### Changed
+- **`server.py` is split into the `cms/` package** (settings, db, auth, web, routes_public, routes_admin, app), each module under 150 lines; `server.py` is now a 15-line entry point. Behaviour is unchanged. `Dockerfile` and `vercel.json` include the new package.
+- Admin write routes, password change and upload are separate, individually guarded functions.
+### Added
+- `docs/ERD.md` (entity relationship diagram and table descriptions) and `docs/security.md` (where each security rule is enforced, single-owner model, SQL and upload rules).
+- Indexes on every `sort_order` column in `database/schema.sql`.
+- README: explicit "no mobile app" and single-owner statements. HowToSetup.md: summary table of all deployment targets at the top. requirements.txt: states that tests need no packages and no lock file is used.
+- Tests for code structure (guarded write routes, parameterised SQL, no DELETE statements, small modules) and for the cold-start demo (projects with photos).
+
 ## [1.3.4] — 2026-11-10
 ### Fixed
 - **Vercel demo showed only a redirect page.** A static `index.html` at the repository root was served by Vercel before the rewrite in `vercel.json`, so `/` never reached the server. The file is removed; a test guards against it coming back.

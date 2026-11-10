@@ -2,6 +2,8 @@
 
 A responsive single-page portfolio website for designers, freelancers and creative studios, **with a built-in admin panel**. Visitors see a polished portfolio (project gallery with category filters, services, about, skills, contact, WhatsApp inquiry). You sign in to `/admin/` to change everything without touching code: texts, photos, projects, categories, services, skills, contact details and social links.
 
+**There is no mobile app** (no iOS, Android or Flutter code): the product is the responsive website and its admin panel, which work on phones, tablets and desktops in the browser.
+
 Built with HTML5, CSS3 and vanilla JavaScript on the front end and a **Python standard-library server with SQLite** on the back end. **Zero third-party dependencies**: nothing to install with pip or npm, no build step, no CDN, no tracking.
 
 | Website | Admin panel |
@@ -20,7 +22,7 @@ Mobile: ![Website on a phone](docs/screenshots/mobile.png) ![Admin panel on a ph
 | Demo e-mail | `demo@example.com` |
 | Demo password | `Demo-Admin-2026!` |
 
-This is a **public demo account** (`DEMO_MODE=true`), not a real administrator. In the demo the password cannot be changed, and changes you save are temporary because Vercel has no persistent disk. Your own installation never contains this account: you create your administrator from `.env` (see HowToSetup.md).
+The demo starts from a clean state on every cold start with the **6 sample projects and their photos**, the services, skills and profile texts. This is a **public demo account** (`DEMO_MODE=true`), not a real administrator. In the demo the password cannot be changed, and changes you save are temporary because Vercel has no persistent disk. Your own installation never contains this account: you create your administrator from `.env` (see HowToSetup.md).
 
 ## Who is it for?
 - Designers, UI/UX designers, illustrators and brand designers who want to update their own portfolio
@@ -56,19 +58,21 @@ Open http://127.0.0.1:8080 for the website and http://127.0.0.1:8080/admin/ to s
 ## What is in the package
 ```text
 demo_defaults.py     public demo sign-in (only used when DEMO_MODE=true)
-server.py            HTTP server, API routes, sign-in, sessions, uploads (Python standard library)
+server.py            entry point (python3 server.py); the code lives in cms/
+cms/                 settings, db (data layer), auth, web (headers, require_admin), routes_public, routes_admin, app
 validation.py        validation of portfolio data and site configuration
 uploads.py           image type detection and safe file names
 Project/             the website (index.html, css/, js/, assets/) and the admin panel (admin/)
 database/            schema.sql (creates the database from scratch), seed.sql (demo records), default-*.json (initial content)
-tests/               automated tests (41)       ->  python3 -m unittest discover -s tests -v
-docs/                customisation guide, architecture, API reference, screenshots
-api/index.py         Vercel serverless entry point (reuses server.py), configured by vercel.json
+tests/               automated tests (46)       ->  python3 -m unittest discover -s tests -v
+docs/                customisation guide, architecture, API reference, ERD (table diagram), security notes, screenshots
+api/index.py         Vercel serverless entry point (reuses cms.app), configured by vercel.json
 Dockerfile, docker-compose.yml, .env.example
 README.md, HowToSetup.md, CLAUDE.md, AGENTS.md, requirements.txt, CHANGELOG.md, LICENSE-NOTE.md
 ```
 
 ## Security model
+- **Single-owner CMS:** one administrator account manages one portfolio. There are no per-user or per-profile ownership rules, because there is only one owner; `profile`, `photos` and `contacts` reference that owner through `owner_id`.
 - Every route that creates, updates or deletes data requires a signed-in administrator, the admin role and the `X-Portfolio-Action` header (anti-CSRF); anonymous requests get 401/403. Test-covered.
 - Passwords are stored as salted PBKDF2-HMAC-SHA256 hashes; sessions expire after 8 hours; 8 failed sign-ins per 5 minutes per address are throttled.
 - All SQL uses bound parameters. Uploads are accepted only as real JPG/PNG/WebP/GIF files (checked by file signature), size-limited, stored under random names.

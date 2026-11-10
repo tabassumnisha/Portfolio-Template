@@ -4,3 +4,8 @@
 #
 # Python version: 3.10 or newer (tested with Python 3.12; the Docker image is python:3.12-slim).
 # Front end: plain HTML, CSS and JavaScript, with no npm packages and no build step.
+#
+# Tests: the test suite uses only Python's built-in unittest, so NO dev or test packages are needed or pinned
+#        (python3 -m unittest discover -s tests -v).
+# Lock file: none, on purpose. Nothing is installed, so there is nothing to lock. If you ever add a package,
+#            pin it here as name==x.y.z and add a lock file (pip-compile or similar).

@@ -18,7 +18,8 @@
 -- SESSIONS: there is deliberately NO sessions table. A session is an HMAC-signed HttpOnly cookie. On a normal server the
 --   session is kept in process memory (a restart signs everybody out); on serverless hosting (STATELESS_SESSIONS) the signed
 --   cookie itself carries the user id and expiry. Nothing about a session is ever written to the database.
--- INDEXES: every foreign key and lookup column is indexed (slug, owner_id, category_id).
+-- INDEXES: every foreign key and lookup column is indexed (slug, owner_id, category_id) and so is every sort_order used to list rows.
+-- OWNERSHIP: this is a single-owner CMS. profile holds the one owner; photos and contacts reference it through owner_id.
 -- ============================================================================
 
 CREATE TABLE IF NOT EXISTS profile (
@@ -59,6 +60,7 @@ CREATE TABLE IF NOT EXISTS categories (
   label       VARCHAR(80)  NOT NULL,               -- filter button text
   sort_order  INTEGER      NOT NULL DEFAULT 0
 );
+CREATE INDEX IF NOT EXISTS idx_categories_sort_order ON categories (sort_order);
 
 CREATE TABLE IF NOT EXISTS projects (
   id           VARCHAR(60)  NOT NULL PRIMARY KEY,  -- matches PortfolioData.projects[].id
@@ -71,6 +73,7 @@ CREATE TABLE IF NOT EXISTS projects (
   FOREIGN KEY (category_id) REFERENCES categories (id) ON UPDATE CASCADE ON DELETE RESTRICT  -- a category that still has projects cannot be deleted
 );
 CREATE INDEX IF NOT EXISTS idx_projects_category ON projects (category_id);
+CREATE INDEX IF NOT EXISTS idx_projects_sort_order ON projects (sort_order);
 
 CREATE TABLE IF NOT EXISTS services (
   id          INTEGER       NOT NULL PRIMARY KEY,
@@ -79,6 +82,7 @@ CREATE TABLE IF NOT EXISTS services (
   body        VARCHAR(400)  NOT NULL,              -- service description (data.js key: text)
   sort_order  INTEGER       NOT NULL DEFAULT 0
 );
+CREATE INDEX IF NOT EXISTS idx_services_sort_order ON services (sort_order);
 
 CREATE TABLE IF NOT EXISTS skills (
   name        VARCHAR(60)  NOT NULL PRIMARY KEY,
@@ -87,6 +91,7 @@ CREATE TABLE IF NOT EXISTS skills (
   ring        CHAR(1)      NOT NULL CHECK (ring IN ('A', 'B')),   -- gradient style of the ring
   sort_order  INTEGER      NOT NULL DEFAULT 0
 );
+CREATE INDEX IF NOT EXISTS idx_skills_sort_order ON skills (sort_order);
 
 CREATE TABLE IF NOT EXISTS other_skills (
   name        VARCHAR(60)  NOT NULL PRIMARY KEY,
