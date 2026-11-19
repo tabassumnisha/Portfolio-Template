@@ -160,5 +160,85 @@
     "Color Theory",
     "Creative Thinking",
     "Problem Solving"
+  ],
+  "liveProjects": [
+    {
+      "tag": "Website",
+      "title": "Brand Website",
+      "text": "A fast, responsive company website with a clear story, service pages and an enquiry form.",
+      "chips": [
+        "Responsive",
+        "Contact form",
+        "SEO ready"
+      ],
+      "url": "https://example.com",
+      "urlLabel": "example.com",
+      "image": "live-demo-1.webp",
+      "alt": "Screenshot of a sample brand website"
+    },
+    {
+      "tag": "Web App",
+      "title": "Online Booking App",
+      "text": "A simple booking tool where customers pick a date and service and receive a confirmation.",
+      "chips": [
+        "Booking",
+        "Calendar",
+        "Notifications"
+      ],
+      "url": "https://example.com",
+      "urlLabel": "example.com",
+      "image": "live-demo-2.webp",
+      "alt": "Screenshot of a sample booking web app"
+    },
+    {
+      "tag": "Online Store",
+      "title": "Handmade Shop",
+      "text": "A small online store with a product gallery, cart and secure checkout for a local maker.",
+      "chips": [
+        "Product gallery",
+        "Cart",
+        "Checkout"
+      ],
+      "url": "https://example.com",
+      "urlLabel": "example.com",
+      "image": "live-demo-3.webp",
+      "alt": "Screenshot of a sample online store"
+    }
+  ],
+  "summaryColumns": [
+    {
+      "heading": "What I do",
+      "items": [
+        {
+          "title": "Brand identity",
+          "text": "logos, colour systems and guidelines"
+        },
+        {
+          "title": "Social media design",
+          "text": "posts, covers and campaign graphics"
+        },
+        {
+          "title": "Website design",
+          "text": "responsive pages built around your goals"
+        }
+      ]
+    },
+    {
+      "heading": "What I have built",
+      "items": [
+        {
+          "title": "Company website",
+          "text": "services, story and enquiry form"
+        },
+        {
+          "title": "Booking app",
+          "text": "online appointments with confirmations"
+        },
+        {
+          "title": "Online store",
+          "text": "product gallery, cart and checkout"
+        }
+      ]
+    }
   ]
 }

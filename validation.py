@@ -16,12 +16,13 @@ PHONE_RE = re.compile(r"^\+?[0-9 ()-]{0,24}$")
 ICONS = ("i-briefcase", "i-image", "i-heart", "i-code", "i-globe", "i-rocket")
 RINGS = ("A", "B")
 
-LIMITS = {"categories": 30, "projects": 200, "services": 60, "skills": 40, "otherSkills": 60, "extraLinks": 12}
+LIMITS = {"categories": 30, "projects": 200, "services": 60, "skills": 40, "otherSkills": 60, "extraLinks": 12,
+          "liveProjects": 12, "chips": 10, "summaryColumns": 2, "summaryItems": 12}
 
 OWNER_FIELDS = {"name": 80, "initials": 3, "role": 100, "intro": 400, "about": 800, "tagline": 200,
                 "quote": 300, "location": 100, "experience": 40}
-SITE_FIELDS = {"title": 120, "description": 300, "footerQuote": 120, "formNote": 300}
-CONTACT_FIELDS = ("whatsappNumber", "whatsappGreeting", "email", "website")
+SITE_FIELDS = {"title": 120, "description": 300, "footerQuote": 120, "formNote": 300, "liveTitle": 60, "liveIntro": 200}
+CONTACT_FIELDS = ("whatsappNumber", "whatsappGreeting", "email", "website", "cvUrl")
 SOCIAL_FIELDS = ("facebook", "x", "instagram", "github", "telegram", "reddit")
 IMAGE_FIELDS = ("hero", "about")
 
@@ -43,7 +44,8 @@ def portfolio_error(data):
     """Validate the portfolio object: categories, projects, featured work, services, skills."""
     if not isinstance(data, dict):
         return "Portfolio must be an object."
-    allowed = {"categories", "projects", "featuredProjectId", "featuredText", "services", "skills", "otherSkills"}
+    allowed = {"categories", "projects", "featuredProjectId", "featuredText", "services", "skills", "otherSkills",
+               "liveProjects", "summaryColumns"}
     if set(data) - allowed:
         return "Unknown portfolio field."
 
@@ -108,6 +110,35 @@ def portfolio_error(data):
     if err: return err
     if not all(_text(x, 1, 40) for x in others):
         return "Other skills must be text of 1-40 characters."
+    return _live_error(data)
+
+
+def _live_error(data):
+    """Live projects (slider cards) and the summary columns. Both are optional, so older stored content stays valid."""
+    live, err = _list({"liveProjects": data.get("liveProjects", [])}, "liveProjects")
+    if err: return err
+    for item in live:
+        if not isinstance(item, dict) or set(item) != {"tag", "title", "text", "chips", "url", "urlLabel", "image", "alt"}:
+            return "Each live project needs tag, title, text, chips, url, urlLabel, image and alt."
+        if not _text(item["tag"], 0, 30) or not _text(item["title"], 1, 80) or not _text(item["text"], 0, 300) \
+                or not _text(item["urlLabel"], 0, 60) or not _text(item["alt"], 1, 200):
+            return "Live project tag (0-30), title (1-80), text (0-300), link label (0-60) or alt text (1-200) is invalid."
+        if not isinstance(item["chips"], list) or len(item["chips"]) > LIMITS["chips"] or not all(_text(c, 1, 30) for c in item["chips"]):
+            return "Live project chips: at most 10 labels of 1-30 characters."
+        if not isinstance(item["url"], str) or (item["url"] and not URL_RE.match(item["url"])):
+            return "Live project link must be empty or start with http:// or https://."
+        if not (isinstance(item["image"], str) and IMAGE_NAME_RE.match(item["image"])):
+            return "Live project image must be a plain file name (no folders)."
+
+    columns, err = _list({"summaryColumns": data.get("summaryColumns", [])}, "summaryColumns")
+    if err: return err
+    for col in columns:
+        if not isinstance(col, dict) or set(col) != {"heading", "items"} or not _text(col["heading"], 1, 60) \
+                or not isinstance(col["items"], list) or len(col["items"]) > LIMITS["summaryItems"]:
+            return "Each summary column needs a heading (1-60) and up to 12 items."
+        for it in col["items"]:
+            if not isinstance(it, dict) or set(it) != {"title", "text"} or not _text(it["title"], 1, 80) or not _text(it["text"], 0, 200):
+                return "Summary items need a title (1-80) and text (0-200)."
     return None
 
 
@@ -145,6 +176,8 @@ def config_error(data):
         return "Contact e-mail is not valid."
     if contact.get("website", "") and not URL_RE.match(contact["website"]):
         return "Website must start with http:// or https://."
+    if contact.get("cvUrl", "") and not URL_RE.match(contact["cvUrl"]):
+        return "CV link must start with http:// or https://."
 
     social = data["social"]
     if set(social) - set(SOCIAL_FIELDS):

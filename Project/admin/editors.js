@@ -46,6 +46,8 @@
     return holder;
   }
 
+  A.ui = { controls: controls, card: card, imagePicker: imagePicker };   /* shared with live-editor.js */
+
   /* ---------- Site profile (config) ---------- */
   E.profile = function (done) {
     var c = A.state.config, root = h('div');
@@ -59,9 +61,11 @@
       ['location', 'Location', 0, 100], ['experience', 'Experience', 0, 40]]);
     root.appendChild(card('Images', [imagePicker('Hero portrait', c.images, 'hero', 'assets/images/'), imagePicker('About photo', c.images, 'about', 'assets/images/')]));
     group('Contact', 'contact', [['whatsappNumber', 'WhatsApp number (international format, e.g. +10000000000)', 0, 24],
-      ['whatsappGreeting', 'WhatsApp greeting text', 1, 300], ['email', 'E-mail address', 0, 260], ['website', 'Website (https://…)', 0, 300]]);
+      ['whatsappGreeting', 'WhatsApp greeting text', 1, 300], ['email', 'E-mail address', 0, 260], ['website', 'Website (https://…)', 0, 300],
+      ['cvUrl', 'CV / resume link (https://…, shows a Download CV button when filled)', 0, 300]]);
     group('Social links (leave empty to hide an icon)', 'social', ['facebook', 'x', 'instagram', 'github', 'telegram', 'reddit'].map(function (n) { return [n, n.charAt(0).toUpperCase() + n.slice(1) + ' URL', 0, 300]; }));
-    group('Page texts', 'site', [['title', 'Browser tab title', 0, 120], ['description', 'Meta description', 1, 300], ['footerQuote', 'Footer quote', 0, 120], ['formNote', 'Note under the contact form', 1, 300]]);
+    group('Page texts', 'site', [['title', 'Browser tab title', 0, 120], ['description', 'Meta description', 1, 300], ['footerQuote', 'Footer quote', 0, 120], ['formNote', 'Note under the contact form', 1, 300],
+      ['liveTitle', 'Live Projects section title', 0, 60], ['liveIntro', 'Live Projects section intro', 0, 200]]);
     var links = c.extraLinks = c.extraLinks || [];
     root.appendChild(card('Extra link chips', links.map(function (l, i) {
       return h('div', { class: 'inline' }, [A.field('Label', l, 'label', { max: 40 }), A.field('URL', l, 'url', { max: 300 }), A.button('Remove', function () { links.splice(i, 1); done(); }, 'danger')]);

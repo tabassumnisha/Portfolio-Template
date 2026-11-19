@@ -60,6 +60,12 @@
     /* Website (footer) */
     $$('a[data-website]').forEach(function (a) { a.setAttribute('href', P.safeUrl(contact.website)); a.setAttribute('target', '_blank'); a.setAttribute('rel', 'noopener noreferrer'); });
 
+    /* CV: the header button becomes "Download CV" when a CV link is set in the admin panel */
+    if (contact.cvUrl) $$('a[data-cv]').forEach(function (a) {
+      a.setAttribute('href', P.safeUrl(contact.cvUrl)); a.setAttribute('target', '_blank'); a.setAttribute('rel', 'noopener noreferrer');
+      a.querySelector('span').textContent = 'Download CV'; a.querySelector('use').setAttribute('href', '#i-download');
+    });
+
     /* Social icons and extra links */
     $$('[data-socials]').forEach(renderSocials);
     var chips = $('#extraLinks');

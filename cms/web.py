@@ -14,7 +14,7 @@ ADMIN_CSP = ("default-src 'self'; img-src 'self' data:; style-src 'self'; script
 
 
 class BaseHandler(SimpleHTTPRequestHandler):
-    server_version = "PortfolioCMS/1.4"
+    server_version = "PortfolioCMS/1.5"
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=str(settings.PROJECT), **kwargs)

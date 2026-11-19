@@ -31,7 +31,7 @@ The demo starts from a clean state on every cold start with the **6 sample proje
 
 ## Features
 **Public website** (`/`)
-- Hero, About, Services, Portfolio gallery with keyboard-operable category filters, Skills, Featured project and Contact
+- Hero, About, Services, Portfolio gallery with keyboard-operable category filters, Skills, Live Projects slider with two summary columns (hidden when empty), Featured project, Download CV button (when a CV link is set) and Contact
 - WhatsApp inquiry flow: buttons and the contact form open `wa.me` with a prefilled message; visitor data is never stored
 - Responsive from 320 px phones to wide desktops, mobile menu, skip link, alt text, visible focus, reduced-motion support
 - Every text, image, project, service and skill comes from the database
@@ -39,6 +39,7 @@ The demo starts from a clean state on every cold start with the **6 sample proje
 **Admin panel** (`/admin/`)
 - Secure sign-in (PBKDF2 password hashing, signed `HttpOnly` session cookie, sign-in throttling), sign-out and password change
 - Edit the site profile: name, role, texts, photos, contact details, social links, page texts
+- Live projects: slider cards (label, title, description, feature chips, live link, screenshot) and two summary columns; the section hides itself when empty
 - Projects: add, edit, reorder, delete, choose the featured project, upload images (JPG, PNG, WebP, GIF up to 3 MB)
 - Categories, services, skills and tags with full add / edit / reorder / delete
 - Changes are validated on the server and go live as soon as you press **Save changes**

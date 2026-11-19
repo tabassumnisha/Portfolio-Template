@@ -6,7 +6,7 @@
   var $ = function (id) { return document.getElementById(id); };
   var TABS = [
     ['profile', 'Site profile', 'config'], ['projects', 'Projects', 'portfolio'], ['categories', 'Categories', 'portfolio'],
-    ['services', 'Services', 'portfolio'], ['skills', 'Skills', 'portfolio'], ['password', 'Password', null]
+    ['live', 'Live projects', 'portfolio'], ['services', 'Services', 'portfolio'], ['skills', 'Skills', 'portfolio'], ['password', 'Password', null]
   ];
   var current = 'projects';
 

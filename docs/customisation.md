@@ -70,6 +70,10 @@ The grid reflows automatically: 3 columns on desktop, 2 on tablet, 1 on phones.
 
 `skills` in `js/data.js`: `{ name, short, level, ring }`. `level` is 0–100; `ring` is `"A"` or `"B"` (two gradient styles). `otherSkills` is a plain list of tags. Do not claim skill levels you cannot back up; remove the section from `index.html` (`#skills`) and the nav link if you do not want it.
 
+## 4b. Live Projects slider and summary columns
+
+`liveProjects` in `js/data.js` (edited in the admin panel under **Live projects**): `{ tag, title, text, chips, url, urlLabel, image, alt }` — up to 12 cards shown as laptop mock-ups in a slider with arrows, dots, swipe and an optional auto-slide. `summaryColumns` are up to two lists (`{ heading, items: [{ title, text }] }`) shown under the slider. The section title and intro are `site.liveTitle` and `site.liveIntro` (Site profile → Page texts). When both lists are empty the section and its menu link disappear. The **CV / resume link** (`contact.cvUrl`, Site profile → Contact) turns the header button into *Download CV*; leave it empty to keep *Contact Me*.
+
 ## 5. Add or remove a section
 
 Sections are plain `<section id="…">` blocks inside `<main>`. To remove one, delete the block and its link in `<nav>`. To add one, copy an existing section's wrapper (`class="section light"` with `class="wrap"` inside) and add a nav link.

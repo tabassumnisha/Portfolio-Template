@@ -17,6 +17,7 @@
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/layout.css">
   <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/live.css">
   <link rel="stylesheet" href="css/responsive.css">
 </head>
 <body id="top">
@@ -35,6 +36,7 @@
       <symbol id="i-mail" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 6L2 7"/></symbol>
       <symbol id="i-pin" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 0 1 16 0z"/><circle cx="12" cy="10" r="3"/></symbol>
       <symbol id="i-briefcase" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></symbol>
+      <symbol id="i-ext" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6M15 3h6v6M10 14L21 3"/></symbol>
       <symbol id="i-download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></symbol>
       <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></symbol>
       <symbol id="i-rocket" viewBox="0 0 24 24"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5"/></symbol>
@@ -61,11 +63,12 @@
       <a href="#about">About</a>
       <a href="#services">Services</a>
       <a href="#portfolio">Portfolio</a>
+      <a href="#live-work" data-live-nav hidden>Live Work</a>
       <a href="#skills">Skills</a>
       <a href="#contact">Contact</a>
-      <a class="outline-btn nav-cv" href="#contact"><span>Contact Me</span><svg class="ic" aria-hidden="true"><use href="#i-mail"/></svg></a>
+      <a class="outline-btn nav-cv" data-cv href="#contact"><span>Contact Me</span><svg class="ic" aria-hidden="true"><use href="#i-mail"/></svg></a>
     </nav>
-    <a class="outline-btn header-cv" href="#contact"><span>Contact Me</span><svg class="ic" aria-hidden="true"><use href="#i-mail"/></svg></a>
+    <a class="outline-btn header-cv" data-cv href="#contact"><span>Contact Me</span><svg class="ic" aria-hidden="true"><use href="#i-mail"/></svg></a>
     <button class="menu-btn" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="nav"><svg class="ic" aria-hidden="true"><use href="#i-menu"/></svg></button>
   </header>
 
@@ -158,6 +161,27 @@
         <p class="gallery-status sr-only" id="galleryStatus" role="status" aria-live="polite"></p>
         <div class="portfolio-grid" id="projectGrid"></div>
         <div class="center reveal"><a class="primary-btn" href="#contact"><span>View More Projects</span><svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg></a></div>
+      </div>
+    </section>
+
+    <!-- LIVE PROJECTS (slider cards and summary columns generated from js/data.js; the whole section is hidden when both lists are empty) -->
+    <section id="live-work" class="section live" aria-labelledby="liveTitle" hidden>
+      <div class="wrap">
+        <div class="section-head reveal">
+          <p class="eyebrow">LIVE WORK</p>
+          <h2 id="liveTitle">Live <span>Projects</span></h2>
+          <p id="liveIntro">Real projects, running live right now.</p>
+        </div>
+        <div class="slider reveal" id="liveSlider" role="region" aria-roledescription="carousel" aria-label="Live projects" hidden>
+          <div class="slider-track" tabindex="0"></div>
+          <div class="slider-ui">
+            <button type="button" class="s-btn s-prev" aria-label="Previous project"><svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg></button>
+            <div class="s-dots" role="tablist" aria-label="Choose project"></div>
+            <button type="button" class="s-btn s-next" aria-label="Next project"><svg class="ic" aria-hidden="true"><use href="#i-arrow"/></svg></button>
+            <button type="button" class="s-btn s-play" aria-label="Pause auto-slide" aria-pressed="false">Pause</button>
+          </div>
+        </div>
+        <div class="work-summary" id="workSummary"></div>
       </div>
     </section>
 
@@ -254,6 +278,7 @@
   <script src="js/content.js"></script>
   <script src="js/gallery.js"></script>
   <script src="js/services.js"></script>
+  <script src="js/live.js"></script>
   <script src="js/nav.js"></script>
   <script src="js/whatsapp-inquiry.js"></script>
   <script src="js/effects.js"></script>

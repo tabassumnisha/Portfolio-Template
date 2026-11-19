@@ -8,6 +8,7 @@
     P.gallery.init();     // filters + project cards
     P.gallery.featured(); // featured band
     P.services.init();    // service cards + skill rings
+    P.live.init();        // live projects slider + summary columns (before the menu reads the sections)
     P.nav.init();         // header + mobile menu
     P.whatsapp.init();    // wa.me links + form
     P.effects.init();     // must run last: observes the generated .reveal elements

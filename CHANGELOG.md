@@ -2,6 +2,15 @@
 
 Format: [Keep a Changelog](https://keepachangelog.com/). Versions follow semantic versioning.
 
+## [1.5.0] — 2026-11-19
+### Added
+- **Live Projects section** (laptop mock-up cards in an accessible slider: arrows, dots, swipe, keyboard arrows, pausable auto-slide that respects reduced motion) and **two summary columns** ("What I do" / "What I have built"). Fully editable in the admin panel (new tab *Live projects*: label, title, description, feature chips, live link, screenshot upload, alt text, reorder, delete). The section and its menu link hide themselves when empty.
+- **Download CV** button: set `contact.cvUrl` (Site profile → Contact); the header button changes from *Contact Me* to *Download CV*.
+- Editable section title and intro (`site.liveTitle`, `site.liveIntro`).
+- New files `css/live.css`, `js/live.js`, `admin/live-editor.js`; three generic placeholder screenshots; validation, defaults, fallbacks, docs and an API test for the new fields. Existing installs keep working: the new fields are optional.
+### Changed
+- Demo defaults now show placeholder contact details (`hello@example.com`, `+10000000000`, `https://example.com`) and social icons so the contact area is not empty.
+
 ## [1.4.0] — 2026-11-10
 ### Changed
 - **`server.py` is split into the `cms/` package** (settings, db, auth, web, routes_public, routes_admin, app), each module under 150 lines; `server.py` is now a 15-line entry point. Behaviour is unchanged. `Dockerfile` and `vercel.json` include the new package.

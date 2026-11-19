@@ -16,7 +16,7 @@ Python standard library on the server, plain HTML, CSS and JavaScript in the bro
 | Validation | `validation.py` | The only place content rules live: `portfolio_error()` and `config_error()` |
 | Uploads | `uploads.py` | Detects the real image type from the file signature, builds safe random file names, enforces the 3 MB limit |
 | Website | `Project/index.html`, `css/`, `js/` | Public site; text and images come from `/config.js` and `/js/data.js` |
-| Admin panel | `Project/admin/` | Form-based editors (`editors.js`), API helpers (`core.js`), start-up (`main.js`) |
+| Admin panel | `Project/admin/` | Form-based editors (`editors.js`, `live-editor.js`), API helpers (`core.js`), start-up (`main.js`) |
 | Database | `database/schema.sql`, `seed.sql`, `default-*.json` | SQLite schema, demo rows and the initial content |
 | Vercel entry | `api/index.py`, `vercel.json` | Runs the same server as one serverless function |
 | Demo sign-in | `demo_defaults.py` | Public demo account, used only when `DEMO_MODE=true` |

@@ -193,6 +193,28 @@ class ApiTests(unittest.TestCase):
         self.assertEqual(status, 400); self.assertIn("error", err)
         self.assertEqual(self.call("PUT", "/api/admin/content/nope", {})[0], 404)
 
+    def test_live_projects_summary_columns_and_cv_link(self):
+        self.login()
+        _, content, _ = self.call("GET", "/api/admin/content")
+        portfolio, config = content["portfolio"], content["config"]
+        self.assertTrue(portfolio["liveProjects"] and portfolio["summaryColumns"])
+        portfolio["liveProjects"][0].update(title="Live Saved By Test", chips=["One", "Two"])
+        portfolio["summaryColumns"][0]["items"].append({"title": "Extra item", "text": ""})
+        self.assertEqual(self.call("PUT", "/api/admin/content/portfolio", portfolio)[0], 200)
+        self.assertIn(b"Live Saved By Test", self.call("GET", "/js/data.js")[1])
+        for bad in ({"url": "javascript:alert(1)"}, {"image": "../x.png"}, {"chips": ["x"] * 11}, {"title": ""}):
+            broken = copy.deepcopy(portfolio); broken["liveProjects"][0].update(bad)
+            self.assertEqual(self.call("PUT", "/api/admin/content/portfolio", broken)[0], 400, bad)
+        broken = copy.deepcopy(portfolio); broken["summaryColumns"] *= 2; broken["summaryColumns"].append(broken["summaryColumns"][0])
+        self.assertEqual(self.call("PUT", "/api/admin/content/portfolio", broken)[0], 400)
+        portfolio["liveProjects"], portfolio["summaryColumns"] = [], []          # an empty list is allowed (the section is then hidden)
+        self.assertEqual(self.call("PUT", "/api/admin/content/portfolio", portfolio)[0], 200)
+        config["contact"]["cvUrl"] = "https://example.com/cv.pdf"
+        self.assertEqual(self.call("PUT", "/api/admin/content/config", config)[0], 200)
+        self.assertIn(b"https://example.com/cv.pdf", self.call("GET", "/config.js")[1])
+        config["contact"]["cvUrl"] = "javascript:alert(1)"
+        self.assertEqual(self.call("PUT", "/api/admin/content/config", config)[0], 400)
+
     def test_config_save(self):
         self.login()
         config = self.call("GET", "/api/admin/content")[1]["config"]

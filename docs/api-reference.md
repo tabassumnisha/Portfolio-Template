@@ -5,7 +5,7 @@ JSON over HTTP. Public routes need no sign-in. Every route that changes data nee
 | Method and path | Access | Purpose |
 |---|---|---|
 | `GET /api/health` | public | `{"ok": true}` for uptime checks |
-| `GET /api/data` | public | portfolio content (categories, projects, services, skills) |
+| `GET /api/data` | public | portfolio content (categories, projects, live projects, summary columns, services, skills) |
 | `GET /api/config` | public | site profile, contact, social links, page texts |
 | `GET /js/data.js`, `GET /config.js` | public | the same content as scripts for the website |
 | `GET /assets/images/<file>` | public | bundled and uploaded images |

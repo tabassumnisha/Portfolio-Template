@@ -17,24 +17,27 @@ window.SITE_CONFIG = {
     "about": "assets/images/about-photo.jpg"
   },
   "contact": {
-    "whatsappNumber": "",
+    "whatsappNumber": "+10000000000",
     "whatsappGreeting": "Hello! I found your portfolio and would like to discuss a project.",
-    "email": "",
-    "website": ""
+    "email": "hello@example.com",
+    "website": "https://example.com",
+    "cvUrl": ""
   },
   "social": {
-    "facebook": "",
-    "x": "",
-    "instagram": "",
-    "github": "",
-    "telegram": "",
-    "reddit": ""
+    "facebook": "https://example.com/facebook",
+    "x": "https://example.com/x",
+    "instagram": "https://example.com/instagram",
+    "github": "https://example.com/github",
+    "telegram": "https://example.com/telegram",
+    "reddit": "https://example.com/reddit"
   },
   "extraLinks": [],
   "site": {
     "title": "Your Name — Designer & Creative Professional",
     "description": "A responsive creative portfolio template. Personalize your name, work, and contact details before publishing.",
     "footerQuote": "",
-    "formNote": "Clicking Send Message opens WhatsApp with your message. Nothing is stored or sent to a server."
+    "formNote": "Clicking Send Message opens WhatsApp with your message. Nothing is stored or sent to a server.",
+    "liveTitle": "Live Projects",
+    "liveIntro": "Real projects, running live right now."
   }
 };
